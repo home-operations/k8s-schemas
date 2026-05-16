@@ -1,0 +1,11 @@
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor
+    contents:
+      - path: silence-operator
+        git:
+          url: https://github.com/giantswarm/silence-operator
+          ref: v0.20.1
+        includePaths:
+          - config/crd/bases/*.yaml
