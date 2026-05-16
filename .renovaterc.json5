@@ -4,8 +4,7 @@
   packageRules: [
     {
       description: "1Password operator: pin to v1.x — the 'v2' branch is stale and unreleased",
-      matchDatasources: ["git-tags"],
-      matchPackageNames: ["1Password/onepassword-operator"],
+      matchPackageNames: ["/1Password/onepassword-operator/"],
       allowedVersions: "<2",
     },
     {
