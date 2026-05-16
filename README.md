@@ -31,7 +31,7 @@ kind you want, and copy its schema URL into a magic comment at the top of
 your manifest:
 
 ```yaml
-# yaml-language-server: $schema=https://home-operations.github.io/k8s-schemas/cert-manager.io/certificate_v1.json
+# yaml-language-server: $schema=https://hk8s-schemas.ome-operations.com/cert-manager.io/certificate_v1.json
 apiVersion: cert-manager.io/v1
 kind: Certificate
 # ...
@@ -40,30 +40,6 @@ kind: Certificate
 The [Red Hat YAML extension](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml)
 for VS Code and most other YAML language-server integrations honor this
 comment.
-
-### As a Flux source
-
-If you want the schemas inside the cluster (offline mirror, fleet-wide schema
-serving, etc.):
-
-```yaml
----
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: OCIRepository
-metadata:
-  name: k8s-schemas
-  namespace: flux-system
-spec:
-  interval: 24h
-  url: oci://ghcr.io/home-operations/k8s-schemas
-  ref:
-    tag: latest
-  verify:
-    provider: cosign
-    matchOIDCIdentity:
-      - issuer: ^https://token\.actions\.githubusercontent\.com$
-        subject: ^https://github\.com/home-operations/k8s-schemas.*$
-```
 
 ## Contributing
 
