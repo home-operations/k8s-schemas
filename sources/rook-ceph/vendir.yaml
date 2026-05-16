@@ -1,0 +1,11 @@
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor
+    contents:
+      - path: rook-ceoh
+        git:
+          url: https://github.com/rook/rook
+          ref: v1.19.5
+        includePaths:
+          - deploy/charts/rook-ceph/templates/resorces.yaml
