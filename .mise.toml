@@ -20,9 +20,8 @@ run = "./scripts/build.sh"
 
 [tasks.all]
 description = "Build every source and render the site locally"
-shell = "bash -c"
 run = """
-set -euo pipefail
+set -eu
 rm -rf "$BUILD_DIR" "$SITE_DIR"
 mkdir -p "$BUILD_DIR"
 for dir in sources/*/; do
@@ -34,4 +33,4 @@ crd-schema-publisher convert -d "$BUILD_DIR" -o "$SITE_DIR" --render
 
 [tasks.clean]
 description = "Remove build and site artifacts"
-run = "rm -rf build site"
+run = 'rm -rf "$BUILD_DIR" "$SITE_DIR"'
