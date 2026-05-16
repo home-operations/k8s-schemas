@@ -36,8 +36,7 @@ Pick **in order** when adding a new source:
 ```sh
 mise install                                                # 📥 install pinned tools
 mise run build sources/cert-manager build/cert-manager.yaml # 🔧 extract one source
-mise run publish build site                                 # 🎨 render merged site
-mise run all                                                # 🚀 do it all
+mise run all                                                # 🚀 build all + render site
 ```
 
 ## 🚦 CI
