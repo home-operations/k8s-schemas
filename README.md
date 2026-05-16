@@ -41,6 +41,37 @@ The [Red Hat YAML extension](https://marketplace.visualstudio.com/items?itemName
 for VS Code and most other YAML language-server integrations honor this
 comment.
 
+### As a git hook
+
+This repo also ships [`hooks/k8s-yaml-schema`](hooks/k8s-yaml-schema) — a
+small bash script that walks your YAML files, derives the right schema URL
+from each document's `apiVersion`/`kind`, and inserts or updates the
+`# yaml-language-server: $schema=...` directive in place. Dependencies are
+`bash`, `yq` (mikefarah), `jq`, and `awk` — most repos already pull these
+in via mise/aqua.
+
+Copy [`.k8s-schema-hook.example.yaml`](.k8s-schema-hook.example.yaml) to
+your repo as `.k8s-schema-hook.yaml`, point `domain:` at your published
+site, vendor the script (one curl is enough), and wire it into
+[lefthook](https://lefthook.dev):
+
+```toml
+# .lefthook.toml
+[pre-commit.commands.k8s-yaml-schema]
+glob = ["kubernetes/**/*.yaml", "kubernetes/**/*.yml"]
+run = "hooks/k8s-yaml-schema --config .k8s-schema-hook.yaml {staged_files}"
+stage_fixed = true
+```
+
+```sh
+curl -sLO https://raw.githubusercontent.com/home-operations/k8s-schemas/main/hooks/k8s-yaml-schema
+chmod +x k8s-yaml-schema && mv k8s-yaml-schema hooks/
+```
+
+Overrides match on `kind`, `apiGroup`, `apiVersion`, file path regex, or
+a HelmRelease's `chartRef` OCI URL — see the example config for the
+vocabulary.
+
 ## Extras
 
 A small `extras/` tree lets the same pipeline publish hand-curated JSON

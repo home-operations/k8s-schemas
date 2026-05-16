@@ -1,0 +1,196 @@
+#!/usr/bin/env bash
+# k8s-yaml-schema — insert or update yaml-language-server $schema directives in
+# Kubernetes YAML manifests based on each document's apiVersion/kind.
+#
+# Usage:
+#   k8s-yaml-schema [--config <path>] [--] <file>...
+#
+# Exit codes:
+#   0   no files were modified
+#   1   at least one file was rewritten (hook style: re-stage and re-run)
+#   2   configuration or input error
+#
+# Dependencies: bash, yq (mikefarah), jq, awk.
+set -euo pipefail
+
+CONFIG=".k8s-schema-hook.yaml"
+FILES=()
+
+while (($#)); do
+  case "$1" in
+    --config) CONFIG="$2"; shift 2 ;;
+    --config=*) CONFIG="${1#*=}"; shift ;;
+    -h|--help) sed -n '2,/^set -/p' "$0" | sed 's/^# \?//'; exit 0 ;;
+    --) shift; FILES+=("$@"); break ;;
+    -*) echo "k8s-yaml-schema: unknown option: $1" >&2; exit 2 ;;
+    *) FILES+=("$1"); shift ;;
+  esac
+done
+
+if [[ ! -f $CONFIG ]]; then
+  echo "k8s-yaml-schema: config not found: $CONFIG" >&2
+  exit 2
+fi
+
+DOMAIN=$(yq -r '.domain // ""' "$CONFIG")
+if [[ -z $DOMAIN || $DOMAIN == null ]]; then
+  echo "k8s-yaml-schema: missing 'domain' in $CONFIG" >&2
+  exit 2
+fi
+DOMAIN=${DOMAIN#https://}; DOMAIN=${DOMAIN#http://}; DOMAIN=${DOMAIN%/}
+
+INCLUDE_CORE=$(yq -r '.include_core // false' "$CONFIG")
+CORE_GROUP=$(yq -r '.core_group // "core"' "$CONFIG")
+TEMPLATE=$(yq -r '.schema_template // "https://{domain}/{apiGroup}/{kind_lowercase}_{apiVersion}.json"' "$CONFIG")
+OVERRIDES=$(yq -o=json '.overrides // []' "$CONFIG")
+
+# Render placeholders in a URL template.
+render() {
+  local t=$1 g=$2 v=$3 k=$4 lc=${4,,}
+  t=${t//\{domain\}/$DOMAIN}
+  t=${t//\{apiGroup\}/$g}
+  t=${t//\{apiVersion\}/$v}
+  t=${t//\{kind\}/$k}
+  t=${t//\{kind_lowercase\}/$lc}
+  t=${t//\{kind_lower\}/$lc}
+  printf '%s' "$t"
+}
+
+# Look up the chartRef's OCIRepository URL from a sidecar file alongside `$file`.
+chart_ref_oci_url() {
+  local file=$1 idx=$2 ref_name dir sidecar
+  ref_name=$(yq -r "select(di == $idx) | .spec.chartRef // {} | select(.kind == \"OCIRepository\") | .name // \"\"" "$file" 2>/dev/null || true)
+  [[ -z $ref_name || $ref_name == null ]] && return 0
+  dir=$(dirname "$file")
+  for sidecar in "$dir/ocirepository.yaml" "$dir/ocirepository.yml"; do
+    [[ -f $sidecar ]] || continue
+    yq -r ". | select(.kind == \"OCIRepository\" and .metadata.name == \"$ref_name\") | .spec.url // \"\"" "$sidecar" 2>/dev/null | head -1
+    return 0
+  done
+}
+
+# Compute the desired schema URL for a single doc.
+choose_schema() {
+  local file=$1 idx=$2 av=$3 kind=$4 group ver
+  if [[ $av == */* ]]; then group=${av%%/*}; ver=${av##*/}
+  else group=$CORE_GROUP; ver=$av; fi
+
+  local n i rule schema
+  n=$(jq 'length' <<< "$OVERRIDES")
+  for ((i=0; i<n; i++)); do
+    rule=$(jq -c ".[$i]" <<< "$OVERRIDES")
+    local mkind mgroup mver mfile_regex mchart
+    mkind=$(jq -r       '.match.kind            // empty' <<< "$rule")
+    mgroup=$(jq -r      '.match.apiGroup        // empty' <<< "$rule")
+    mver=$(jq -r        '.match.apiVersion      // empty' <<< "$rule")
+    mfile_regex=$(jq -r '.match.file_regex      // empty' <<< "$rule")
+    mchart=$(jq -r      '.match.chartRefOciUrl  // empty' <<< "$rule")
+
+    [[ -n $mkind  && $mkind  != "$kind"  ]] && continue
+    [[ -n $mgroup && $mgroup != "$group" ]] && continue
+    [[ -n $mver   && $mver   != "$ver"   ]] && continue
+    [[ -n $mfile_regex ]] && { [[ $file =~ $mfile_regex ]] || continue; }
+    if [[ -n $mchart ]]; then
+      local actual; actual=$(chart_ref_oci_url "$file" "$idx")
+      [[ $actual == "$mchart" ]] || continue
+    fi
+
+    schema=$(jq -r '.schema' <<< "$rule")
+    if [[ $schema == *"{"* ]]; then render "$schema" "$group" "$ver" "$kind"
+    else printf '%s' "$schema"; fi
+    return 0
+  done
+
+  render "$TEMPLATE" "$group" "$ver" "$kind"
+}
+
+# Insert or update the directive at the start of each doc.
+# Reads per-doc URLs from `urls_file` (one per line; empty line = no change).
+apply_directives() {
+  local file=$1 urls_file=$2
+  awk -v urls_file="$urls_file" '
+    BEGIN {
+      i = 0
+      while ((getline line < urls_file) > 0) urls[i++] = line
+      close(urls_file)
+      doc = 0; leading = 1; placed = 0
+    }
+    function emit(    u) {
+      u = urls[doc]
+      if (u != "" && !placed) { print "# yaml-language-server: $schema=" u; placed = 1 }
+    }
+    /^---[ \t]*$/ {
+      if (leading) emit()
+      print
+      doc++; leading = 1; placed = 0
+      next
+    }
+    leading && !placed && /^[[:space:]]*#[[:space:]]*yaml-language-server:[[:space:]]*[$]schema=/ {
+      cur = $0
+      sub(/.*[$]schema=/, "", cur)
+      sub(/[[:space:]]+$/, "", cur)
+      if (cur == urls[doc])      print
+      else if (urls[doc] != "")  print "# yaml-language-server: $schema=" urls[doc]
+      else                       print
+      placed = 1; leading = 0
+      next
+    }
+    leading && /^[[:space:]]*($|#)/ { print; next }
+    leading {
+      emit()
+      leading = 0
+      print
+      next
+    }
+    { print }
+    END { if (leading) emit() }
+  ' "$file"
+}
+
+process_file() {
+  local file=$1
+  local urls=() doc=0 line av kind
+  while IFS= read -r line; do
+    [[ -z $line ]] && { urls+=(""); doc=$((doc+1)); continue; }
+    av=$(jq -r '.av   // ""' <<< "$line")
+    kind=$(jq -r '.kind // ""' <<< "$line")
+    if [[ -z $av || -z $kind || $av == null || $kind == null ]]; then
+      urls+=("")
+    elif [[ $av != */* && $INCLUDE_CORE != "true" ]]; then
+      urls+=("")
+    else
+      urls+=("$(choose_schema "$file" "$doc" "$av" "$kind")")
+    fi
+    doc=$((doc+1))
+  done < <(yq -o=json -I=0 '{"av": (.apiVersion // ""), "kind": (.kind // "")}' "$file" 2>/dev/null || true)
+
+  ((${#urls[@]})) || return 0
+
+  local urls_file tmp
+  urls_file=$(mktemp); printf '%s\n' "${urls[@]}" > "$urls_file"
+  tmp=$(mktemp)
+  apply_directives "$file" "$urls_file" > "$tmp"
+  rm -f "$urls_file"
+
+  if cmp -s "$file" "$tmp"; then
+    rm -f "$tmp"
+    return 0
+  fi
+  mv "$tmp" "$file"
+  return 1
+}
+
+changed=0; errors=0
+for file in "${FILES[@]}"; do
+  [[ -f $file ]] || continue
+  rc=0
+  process_file "$file" || rc=$?
+  case $rc in
+    0) : ;;
+    1) changed=1; echo "k8s-yaml-schema: updated $file" >&2 ;;
+    *) errors=$((errors+1)); echo "k8s-yaml-schema: error processing $file" >&2 ;;
+  esac
+done
+
+(( errors > 0 )) && exit 2
+(( changed )) && exit 1 || exit 0

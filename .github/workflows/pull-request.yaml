@@ -7,6 +7,25 @@ on:
   pull_request:
 
 jobs:
+  hook:
+    name: Hook tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Setup mise
+        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+        with:
+          experimental: true
+
+      - name: Run hook tests
+        run: bash hooks/test-k8s-yaml-schema.sh
+
   changed:
     name: Discover changed sources
     runs-on: ubuntu-latest
@@ -96,7 +115,8 @@ jobs:
   status:
     if: ${{ !cancelled() }}
     needs:
-      - "build"
+      - hook
+      - build
     name: Build Success
     runs-on: ubuntu-latest
     steps:
