@@ -28,12 +28,26 @@ jobs:
         id: dispatch
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          REPO: ${{ github.repository_owner }}/.github
+        # gh workflow run doesn't print the dispatched run id; poll for it.
         run: |-
-          RUN_URL=$(gh workflow run renovate.yaml \
-            --repo "${{ github.repository_owner }}/.github" \
+          prev=$(gh run list --repo "$REPO" --workflow renovate.yaml \
+            --limit 1 --json databaseId --jq '.[0].databaseId // ""')
+          gh workflow run renovate.yaml \
+            --repo "$REPO" \
             --ref main \
-            --field "autodiscoverFilter=${{ github.event.repository.name }}")
-          echo "run_id=${RUN_URL##*/}" >> "$GITHUB_OUTPUT"
+            --field "autodiscoverFilter=${{ github.event.repository.name }}"
+          for _ in $(seq 1 30); do
+            run_id=$(gh run list --repo "$REPO" --workflow renovate.yaml \
+              --limit 1 --json databaseId --jq '.[0].databaseId // ""')
+            if [[ -n "$run_id" && "$run_id" != "$prev" ]]; then
+              echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Dispatched Renovate run did not appear within 60s" >&2
+          exit 1
 
       - name: Await Renovate Completion
         env:
