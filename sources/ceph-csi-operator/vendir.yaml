@@ -5,7 +5,7 @@ directories:
     contents:
       - path: ceph-csi-operator
         git:
-          url: https://github.com/ceph/csi-operator
+          url: https://github.com/ceph/ceph-csi-operator
           ref: v0.6.0
         includePaths:
           - config/crd/bases/*.yaml
