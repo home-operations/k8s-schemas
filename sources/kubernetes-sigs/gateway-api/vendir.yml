@@ -9,5 +9,5 @@ directories:
           slug: kubernetes-sigs/gateway-api
           tag: v1.5.1
           assetNames:
-            - standard-install.yaml
+            - experimental-install.yaml
           disableAutoChecksumValidation: true
