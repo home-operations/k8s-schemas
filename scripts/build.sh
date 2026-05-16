@@ -2,7 +2,7 @@
 # Extract CRDs from a single source into a YAML file.
 # Usage: build.sh <source-dir> <output-file>
 #
-# Reads <source-dir>/vendir.yaml, runs `vendir sync` in a scratch dir, and
+# Reads <source-dir>/vendir.yml, runs `vendir sync` in a scratch dir, and
 # yq-filters the vendored tree into one multi-doc YAML containing only the
 # CustomResourceDefinition documents. The result is then ingested by
 # crd-schema-publisher in the publish step.
@@ -21,7 +21,8 @@ mkdir -p "$(dirname "$OUTPUT_FILE")"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
-vendir sync --chdir "$WORK" -f "$SOURCE_DIR/vendir.yaml" >&2
+cp "$SOURCE_DIR/vendir.yml" "$WORK/"
+vendir sync --chdir "$WORK" >&2
 
 files=("$WORK"/vendor/**/*.yaml "$WORK"/vendor/**/*.yml)
 if (( ${#files[@]} == 0 )); then

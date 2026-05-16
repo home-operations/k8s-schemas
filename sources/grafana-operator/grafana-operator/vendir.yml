@@ -1,0 +1,13 @@
+---
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor
+    contents:
+      - path: .
+        githubRelease:
+          slug: grafana-operator/grafana-operator
+          tag: v5.22.2
+          assetNames:
+            - crds.yaml
+          disableAutoChecksumValidation: true

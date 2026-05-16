@@ -1,0 +1,12 @@
+---
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor
+    contents:
+      - path: .
+        git:
+          url: https://github.com/k8snetworkplumbingwg/network-attachment-definition-client
+          ref: v1.7.7
+        includePaths:
+          - artifacts/networks-crd.yaml

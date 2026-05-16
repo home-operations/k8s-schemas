@@ -1,0 +1,12 @@
+---
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor
+    contents:
+      - path: .
+        git:
+          url: https://github.com/backube/volsync
+          ref: v0.15.0
+        includePaths:
+          - config/crd/bases/*.yaml
