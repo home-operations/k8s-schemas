@@ -6,8 +6,8 @@ directories:
     contents:
       - path: .
         githubRelease:
-          slug: kubernetes-sigs/gateway-api
-          tag: v1.5.1
+          slug: flux-iac/tofu-controller
+          tag: v0.16.3
           assetNames:
-            - experimental-install.yaml
+            - tofu-controller.crds.yaml
           disableAutoChecksumValidation: true

@@ -6,8 +6,8 @@ directories:
     contents:
       - path: .
         githubRelease:
-          slug: kubernetes-sigs/gateway-api
-          tag: v1.5.1
+          slug: open-telemetry/opentelemetry-operator
+          tag: v0.151.0
           assetNames:
-            - experimental-install.yaml
+            - opentelemetry-operator.yaml
           disableAutoChecksumValidation: true

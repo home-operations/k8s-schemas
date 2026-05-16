@@ -6,8 +6,8 @@ directories:
     contents:
       - path: .
         githubRelease:
-          slug: kubernetes-sigs/gateway-api
-          tag: v1.5.1
+          slug: VictoriaMetrics/operator
+          tag: v0.69.0
           assetNames:
-            - experimental-install.yaml
+            - crd.yaml
           disableAutoChecksumValidation: true

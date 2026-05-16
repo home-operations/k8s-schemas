@@ -10,3 +10,4 @@ directories:
           ref: v1.19.5
         includePaths:
           - deploy/examples/crds.yaml
+          - deploy/olm/assemble/objectbucket.io_*.yaml
