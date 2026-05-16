@@ -3,7 +3,7 @@ kind: Config
 directories:
   - path: vendor
     contents:
-      - path: talos
+      - path: .
         git:
           url: https://github.com/siderolabs/talos
           ref: v1.13.2
