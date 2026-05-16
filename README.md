@@ -137,3 +137,9 @@ If you fork it:
 
 3. **Use lowercase names.** GHCR requires the owner and repository name to
    be entirely lowercase.
+
+4. **Enable auto-merge** under repo Settings → General, then add a branch
+   protection rule on `main` requiring the `Build Success` status check.
+   Renovate's package rule already sets `automerge: true` for vendir updates,
+   so once `Build Success` is required, version bumps will land
+   automatically when CI passes.

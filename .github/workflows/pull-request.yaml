@@ -39,7 +39,7 @@ jobs:
   build:
     if: ${{ needs.changed.outputs.matrix != '[]' }}
     needs:
-      - "changed"
+      - changed
     name: Build ${{ matrix.source.name }}
     runs-on: ubuntu-latest
     permissions:
@@ -64,3 +64,17 @@ jobs:
         env:
           VENDIR_GITHUB_API_TOKEN: ${{ github.token }}
         run: mise run build "${{ matrix.source.dir }}" "${{ matrix.source.out }}"
+
+  status:
+    if: ${{ !cancelled() }}
+    needs:
+      - "build"
+    name: Build Success
+    runs-on: ubuntu-latest
+    steps:
+      - name: Any jobs failed?
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: exit 1
+      - name: All jobs passed or skipped?
+        if: ${{ !(contains(needs.*.result, 'failure')) }}
+        run: echo "${{ toJSON(needs.*.result) }}"
