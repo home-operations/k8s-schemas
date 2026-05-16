@@ -1,6 +1,9 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: ["github>home-operations/renovate-config"],
+  vendir: {
+    managerFilePatterns: ["/(^|/)vendir\\.ya?ml$/"],
+  },
   packageRules: [
     {
       description: "Auto-merge CRD upstream bumps",
