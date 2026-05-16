@@ -1,0 +1,13 @@
+---
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor
+    contents:
+      - path: .
+        githubRelease:
+          slug: kubernetes-sigs/gateway-api
+          tag: v1.5.1
+          assetNames:
+            - standard-install.yaml
+          disableAutoChecksumValidation: true

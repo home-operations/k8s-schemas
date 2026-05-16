@@ -6,13 +6,13 @@ autocomplete, hover documentation, and validation against the real upstream
 API.
 
 The rendered site is at
-[`home-operations.github.io/k8s-schemas`](https://home-operations.github.io/k8s-schemas/),
+[`k8s-schemas.home-operations.com`](https://k8s-schemas.home-operations.com),
 and the same content is mirrored as a cosign-signed OCI artifact at
 `ghcr.io/home-operations/k8s-schemas:latest`.
 
 ## How it works
 
-Each upstream project gets a small `vendir.yaml` under `sources/`. The build
+Each upstream project gets a small `vendir.yml` under `sources/`. The build
 fetches that upstream's CRDs at the pinned version, keeps only the
 `CustomResourceDefinition` documents, and hands the whole set to
 [`crd-schema-publisher`](https://github.com/sholdee/crd-schema-publisher),
@@ -26,7 +26,7 @@ and opens a PR when an upstream cuts a release.
 
 ### In your editor
 
-Browse the [site](https://home-operations.github.io/k8s-schemas/), find the
+Browse the [site](https://k8s-schemas.home-operations.com), find the
 kind you want, and copy its schema URL into a magic comment at the top of
 your manifest:
 
@@ -67,7 +67,9 @@ To add a new upstream CRD source:
    that doesn't publish anything usable) is out of scope here — open an
    issue and we'll talk about it.
 
-3. **Create `sources/<name>/vendir.yaml`.** One of these two shapes:
+3. **Create `sources/<owner>/<repo>/vendir.yml`.** Folders are nested by
+   GitHub owner so two upstreams can never collide. Use one of these two
+   shapes (the body is identical except for the upstream block):
 
    GitHub release asset:
 
@@ -78,7 +80,7 @@ To add a new upstream CRD source:
    directories:
      - path: vendor
        contents:
-         - path: <name>
+         - path: .
            githubRelease:
              slug: <owner>/<repo>
              tag: <upstream-version>
@@ -96,7 +98,7 @@ To add a new upstream CRD source:
    directories:
      - path: vendor
        contents:
-         - path: <name>
+         - path: .
            git:
              url: https://github.com/<owner>/<repo>
              ref: <upstream-tag>
@@ -111,9 +113,10 @@ To add a new upstream CRD source:
    mise run all
    ```
 
-   This builds every source and renders the merged site at `./site/`. Open
-   `site/index.html` to spot-check your new entry shows up under the right
-   API group.
+   This builds every source and renders the merged site at `./out/site/`.
+   Open `out/site/index.html` to spot-check your new entry shows up under
+   the right API group. Per-source intermediate YAMLs land in `out/crds/`
+   if you need to inspect them.
 
 5. **Open a pull request.** The PR workflow builds only the sources you
    touched. On merge to `main`, the release workflow rebuilds everything,

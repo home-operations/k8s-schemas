@@ -3,8 +3,7 @@ experimental = true
 
 [env]
 WORKSPACE = "{{config_root}}"
-BUILD_DIR = "{{config_root}}/build"
-SITE_DIR = "{{config_root}}/site"
+OUT_DIR = "{{config_root}}/out"
 
 [tools]
 "aqua:carvel-dev/vendir" = "0.45.3"
@@ -22,15 +21,15 @@ run = "./scripts/build.sh"
 description = "Build every source and render the site locally"
 run = """
 set -eu
-rm -rf "$BUILD_DIR" "$SITE_DIR"
-mkdir -p "$BUILD_DIR"
-for dir in sources/*/; do
-  name=$(basename "$dir")
-  ./scripts/build.sh "$dir" "$BUILD_DIR/$name.yaml"
+rm -rf "$OUT_DIR"
+mkdir -p "$OUT_DIR/crds"
+for dir in sources/*/*/; do
+  name=$(basename "$(dirname "$dir")")_$(basename "$dir")
+  ./scripts/build.sh "$dir" "$OUT_DIR/crds/$name.yaml"
 done
-crd-schema-publisher convert -d "$BUILD_DIR" -o "$SITE_DIR" --render
+crd-schema-publisher convert -d "$OUT_DIR/crds" -o "$OUT_DIR/site" --render
 """
 
 [tasks.clean]
 description = "Remove build and site artifacts"
-run = 'rm -rf "$BUILD_DIR" "$SITE_DIR"'
+run = 'rm -rf "$OUT_DIR"'

@@ -4,9 +4,10 @@ name: Release
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - "main"
     paths:
-      - "sources/**/vendir.yaml"
+      - "sources/**/vendir.yml"
       - "scripts/**"
       - ".mise.toml"
       - ".github/workflows/release.yaml"
@@ -50,7 +51,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
-          path: site
+          path: out/site
 
       - name: Deploy
         id: deployment
@@ -64,10 +65,10 @@ jobs:
           password: ${{ github.token }}
 
       - name: Publish and sign OCI artifact
-        run: |
+        run: |-
           digest=$(flux push artifact \
             "oci://ghcr.io/${{ github.repository }}:latest" \
-            --path=site \
+            --path=out/site \
             --source="${{ github.server_url }}/${{ github.repository }}" \
             --revision="${{ github.ref_name }}@sha1:${{ github.sha }}" \
             --output=json | jq -r '.repository + "@" + .digest')

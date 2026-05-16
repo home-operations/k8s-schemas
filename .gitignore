@@ -1,5 +1,4 @@
 .claude/
-build/
-site/
+out/
 sources/**/vendor/
-vendir.lock.yaml
+vendir.lock.yml
