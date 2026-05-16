@@ -1,0 +1,11 @@
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor
+    contents:
+      - path: cloudnative-pg
+        git:
+          url: https://github.com/cloudnative-pg/cloudnative-pg
+          ref: v1.29.1
+        includePaths:
+          - config/crd/bases/*.yaml
