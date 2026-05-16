@@ -68,9 +68,9 @@ curl -sLO https://raw.githubusercontent.com/home-operations/k8s-schemas/main/hoo
 chmod +x k8s-yaml-schema && mv k8s-yaml-schema hooks/
 ```
 
-Overrides match on `kind`, `apiGroup`, `apiVersion`, file path regex, or
-a HelmRelease's `chartRef` OCI URL — see the example config for the
-vocabulary.
+Overrides match on `kind`, `apiGroup`, or a HelmRelease's `chartRef` OCI
+URL (resolved against a sidecar `ocirepository.yaml`). See the example
+config.
 
 ## Extras
 

@@ -1,22 +1,13 @@
 ---
 # Schema host. The hook writes URLs of the form
 #   https://<domain>/<apiGroup>/<kind_lowercase>_<apiVersion>.json
-# unless an override matches first.
+# unless an override matches first. Core resources (apiVersion without a
+# group, like `v1` or `apps/v1`) are always skipped.
 domain: k8s-schemas.home-operations.com
 
-# Optional. Default false. When true, the hook also writes directives for core
-# resources (apiVersion without a group, like `v1` or `apps/v1`).
-include_core: false
-
-# Optional. Default `core`. Used as the {apiGroup} placeholder for core resources.
-core_group: core
-
-# Optional. Defaults to the URL pattern shown above. Placeholders:
-#   {domain} {apiGroup} {apiVersion} {kind} {kind_lowercase}
-# schema_template: "https://{domain}/{apiGroup}/{kind_lowercase}_{apiVersion}.json"
-
-# Per-rule overrides. First match wins. The `schema` field may use the same
-# placeholders as `schema_template`; rules without `{` are treated as literals.
+# Per-rule overrides. First match wins. Match keys: `kind`, `apiGroup`,
+# `chartRefOciUrl`. The `schema` field may use {domain} {apiGroup}
+# {apiVersion} {kind} {kind_lowercase} placeholders.
 overrides:
   # Use schemastore's kustomization schema instead of synthesising one.
   - name: kustomize
@@ -25,17 +16,9 @@ overrides:
     schema: https://json.schemastore.org/kustomization
 
   # When a HelmRelease's chartRef points at the bjw-s app-template OCI chart,
-  # swap in the self-contained schema this repo composes (the values block is
-  # fully inlined, so editors don't need to follow cross-document $refs).
+  # swap in the self-contained schema this repo composes.
   - name: helmrelease-app-template
     match:
       kind: HelmRelease
       chartRefOciUrl: oci://ghcr.io/bjw-s-labs/helm/app-template
     schema: https://{domain}/extras/bjw-s-labs/app-template/helmrelease-helm-v2.schema.json
-
-  # Example: route by file path instead of apiVersion.
-  # - name: prometheusrule-by-path
-  #   match:
-  #     file_regex: /prometheus/.*\.yaml$
-  #     kind: PrometheusRule
-  #   schema: https://example.com/prometheusrule.schema.json
