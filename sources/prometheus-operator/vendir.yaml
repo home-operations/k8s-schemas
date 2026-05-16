@@ -1,0 +1,12 @@
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor
+    contents:
+      - path: prometheus-operator
+        githubRelease:
+          slug: prometheus-operator/prometheus-operator
+          tag: v0.91.0
+          assetNames:
+            - bundle.yaml
+          disableAutoChecksumValidation: true

@@ -1,0 +1,74 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Release
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "sources/**/vendir.yaml"
+      - "scripts/**"
+      - ".mise.toml"
+      - ".github/workflows/release.yaml"
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+      packages: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Setup mise
+        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+        with:
+          experimental: true
+
+      - name: Build and render site
+        env:
+          VENDIR_GITHUB_API_TOKEN: ${{ github.token }}
+        run: mise run all
+
+      - name: Configure Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: site
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
+
+      - name: Login to GHCR
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Publish and sign OCI artifact
+        run: |
+          digest=$(flux push artifact \
+            "oci://ghcr.io/${{ github.repository }}:latest" \
+            --path=site \
+            --source="${{ github.server_url }}/${{ github.repository }}" \
+            --revision="${{ github.ref_name }}@sha1:${{ github.sha }}" \
+            --output=json | jq -r '.repository + "@" + .digest')
+          cosign sign --yes "$digest"

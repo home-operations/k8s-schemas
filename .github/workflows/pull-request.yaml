@@ -1,0 +1,55 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Pull Request
+
+on:
+  merge_group:
+  pull_request:
+
+jobs:
+  changed:
+    name: Get Changed Sources
+    runs-on: ubuntu-latest
+    outputs:
+      sources: ${{ steps.sources.outputs.sources }}
+    steps:
+      - name: Get Changed Files
+        id: changed-files
+        uses: bjw-s-labs/action-changed-files@a9a36fb08ce06db9b02fbd8026cc2c0945eb9841 # v0.6.0
+        with:
+          patterns: sources/**/vendir.yaml
+
+      - name: Extract source names
+        id: sources
+        run: |
+          sources=$(jq -c '[.[] | {artifactName: (. | split("/") | .[-2])}] | unique_by(.artifactName)' \
+            <<< '${{ steps.changed-files.outputs.changed_files }}')
+          echo "sources=${sources}" >> "$GITHUB_OUTPUT"
+
+  build:
+    if: ${{ needs.changed.outputs.sources != '[]' }}
+    needs: ["changed"]
+    name: Build ${{ matrix.source.artifactName }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        source: ${{ fromJSON(needs.changed.outputs.sources) }}
+      fail-fast: false
+      max-parallel: 4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Setup mise
+        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+        with:
+          experimental: true
+
+      - name: Extract CRDs
+        env:
+          VENDIR_GITHUB_API_TOKEN: ${{ github.token }}
+        run: mise run build "sources/${{ matrix.source.artifactName }}" "build/${{ matrix.source.artifactName }}.yaml"

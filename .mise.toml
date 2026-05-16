@@ -1,0 +1,40 @@
+[settings]
+experimental = true
+
+[env]
+WORKSPACE = "{{config_root}}"
+BUILD_DIR = "{{config_root}}/build"
+SITE_DIR = "{{config_root}}/site"
+
+[tools]
+"aqua:carvel-dev/vendir" = "0.45.3"
+"aqua:mikefarah/yq" = "4.53.2"
+"aqua:jqlang/jq" = "1.8.1"
+"aqua:fluxcd/flux2" = "2.8.7"
+"aqua:sigstore/cosign" = "3.0.6"
+"ubi:sholdee/crd-schema-publisher" = "2026.515.13351"
+
+[tasks.build]
+description = "Extract CRDs from one source (usage: mise run build <source-dir> <output-file>)"
+run = "./scripts/build.sh"
+
+[tasks.publish]
+description = "Render the merged docs site from a directory of CRD YAMLs (usage: mise run publish <crds-dir> <site-dir>)"
+run = 'crd-schema-publisher convert -d "$1" -o "$2" --render'
+
+[tasks.all]
+description = "Build every source and render the site locally"
+run = """
+set -euo pipefail
+rm -rf "$BUILD_DIR" "$SITE_DIR"
+mkdir -p "$BUILD_DIR"
+for dir in sources/*/; do
+  name=$(basename "$dir")
+  mise run build "$dir" "$BUILD_DIR/$name.yaml"
+done
+mise run publish "$BUILD_DIR" "$SITE_DIR"
+"""
+
+[tasks.clean]
+description = "Remove build and site artifacts"
+run = "rm -rf build site"

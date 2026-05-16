@@ -1,0 +1,14 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["github>home-operations/renovate-config"],
+  packageRules: [
+    {
+      description: "Auto-merge CRD upstream bumps",
+      matchManagers: ["vendir"],
+      automerge: true,
+      automergeType: "pr",
+      matchUpdateTypes: ["major", "minor", "patch"],
+      ignoreTests: false,
+    },
+  ],
+}
