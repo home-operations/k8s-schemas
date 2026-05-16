@@ -7,6 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/bjw-s-labs/helm-charts
-          ref: app-template-5.0.1
+          ref: common-5.0.1
         includePaths:
-          - charts/other/app-template/schemas/*.schema.json
+          - charts/library/common/values.schema.json
+          - charts/library/common/schemas/*.json

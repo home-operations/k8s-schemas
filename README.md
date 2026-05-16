@@ -43,12 +43,24 @@ comment.
 
 ## Extras
 
-A small `extras/` tree lets the same pipeline publish hand-curated JSON
-schemas that aren't CRDs (e.g. the bjw-s app-template HelmRelease schema).
-Each source uses the same `vendir.yml` shape as the CRD sources but the
-build copies the selected files verbatim into `out/site/extras/<owner>/<name>/`.
-Use this for narrow, schema-shaped artifacts only — anything that needs
-rendering or transformation belongs upstream.
+A small `extras/` tree lets the same pipeline publish JSON schemas that
+aren't CRDs. Each source uses the same `vendir.yml` shape as the CRD
+sources. By default the build copies whatever vendir selected, flat, into
+`out/site/extras/<owner>/<name>/`.
+
+For schemas that need transformation, drop an executable `compose.sh`
+alongside the `vendir.yml`. The build invokes it as
+`compose.sh <vendor-dir> <output-dir> <site-dir>` instead of doing a
+verbatim copy, and the script writes the final files into `<output-dir>`.
+`<site-dir>` is the rendered site root so a composer can read other
+schemas this repo publishes (e.g. the Flux HelmRelease schema) and inline
+them.
+
+The bjw-s app-template entry is the canonical example: it vendors the
+common-library schemas, then composes a self-contained HelmRelease v2
+schema with every `$ref` rewritten to an intra-document JSON Pointer —
+which fixes the "yaml-language-server can't follow remote refs" problem
+that plagues the upstream's pre-composed file.
 
 ## Contributing
 
