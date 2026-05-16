@@ -2,3 +2,5 @@
 out/
 sources/**/vendor/
 sources/**/vendir.lock.yml
+extras/**/vendor/
+extras/**/vendir.lock.yml

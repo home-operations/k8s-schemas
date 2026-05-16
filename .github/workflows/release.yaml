@@ -8,6 +8,7 @@ on:
       - "main"
     paths:
       - "sources/**/vendir.yml"
+      - "extras/**/vendir.yml"
       - "scripts/**"
       - ".mise.toml"
       - ".github/workflows/release.yaml"
