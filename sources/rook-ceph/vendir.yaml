@@ -8,4 +8,4 @@ directories:
           url: https://github.com/rook/rook
           ref: v1.19.5
         includePaths:
-          - deploy/charts/rook-ceph/templates/resources.yaml
+          - deploy/examples/crds.yaml
