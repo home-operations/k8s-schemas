@@ -1,0 +1,13 @@
+---
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor
+    contents:
+      - path: .
+        githubRelease:
+          slug: flux-iac/tofu-controller
+          tag: v0.16.3
+          assetNames:
+            - tofu-controller.crds.yaml
+          disableAutoChecksumValidation: true

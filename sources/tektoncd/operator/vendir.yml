@@ -1,0 +1,12 @@
+---
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor
+    contents:
+      - path: .
+        git:
+          url: https://github.com/tektoncd/operator
+          ref: v0.79.1
+        includePaths:
+          - config/base/300-operator_v1alpha1_*_crd.yaml
