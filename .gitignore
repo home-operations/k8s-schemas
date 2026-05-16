@@ -1,4 +1,4 @@
 .claude/
 out/
 sources/**/vendor/
-/vendir.lock.yml
+sources/**/vendir.lock.yml
