@@ -3,6 +3,12 @@
   extends: ["github>home-operations/renovate-config"],
   packageRules: [
     {
+      description: "1Password operator: pin to v1.x — the 'v2' branch is stale and unreleased",
+      matchDatasources: ["git-tags"],
+      matchPackageNames: ["1Password/onepassword-operator"],
+      allowedVersions: "<2",
+    },
+    {
       description: "Auto-merge CRD upstream bumps",
       matchManagers: ["vendir"],
       automerge: true,
