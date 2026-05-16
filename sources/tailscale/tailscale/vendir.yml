@@ -7,6 +7,6 @@ directories:
       - path: .
         git:
           url: https://github.com/tailscale/tailscale
-          ref: v1.96.4
+          ref: v1.98.2
         includePaths:
           - cmd/k8s-operator/deploy/crds/*.yaml
