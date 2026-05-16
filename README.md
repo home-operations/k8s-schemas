@@ -41,6 +41,46 @@ The [Red Hat YAML extension](https://marketplace.visualstudio.com/items?itemName
 for VS Code and most other YAML language-server integrations honor this
 comment.
 
+### As a git hook
+
+This repo also ships a small Python hook,
+[`k8s-yaml-schema`](hooks/k8s_yaml_schema.py), that walks your YAML files,
+derives the right schema URL from each document's `apiVersion`/`kind`, and
+inserts or updates the `# yaml-language-server: $schema=...` directive in
+place. Copy [`.k8s-schema-hook.example.yaml`](.k8s-schema-hook.example.yaml)
+to your repo as `.k8s-schema-hook.yaml`, point `domain:` at your published
+site, and wire it into your pre-commit or lefthook config.
+
+**pre-commit**
+
+```yaml
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/home-operations/k8s-schemas
+    rev: main  # pin a tag or SHA in real use
+    hooks:
+      - id: k8s-yaml-schema
+        files: ^kubernetes/.+\.ya?ml$
+```
+
+**lefthook**
+
+Install the CLI once (`uv tool install git+https://github.com/home-operations/k8s-schemas`
+or `pipx install git+https://github.com/home-operations/k8s-schemas`) and
+call it from your lefthook config:
+
+```toml
+# .lefthook.toml
+[pre-commit.commands.k8s-yaml-schema]
+glob = ["kubernetes/**/*.yaml", "kubernetes/**/*.yml"]
+run = "k8s-yaml-schema --config .k8s-schema-hook.yaml {staged_files}"
+stage_fixed = true
+```
+
+The hook supports per-resource overrides matched on `kind`, `apiGroup`,
+file path regex, JMESPath, or a HelmRelease's `chartRef` OCI URL — see the
+example config for the full vocabulary.
+
 ## Extras
 
 A small `extras/` tree lets the same pipeline publish hand-curated JSON

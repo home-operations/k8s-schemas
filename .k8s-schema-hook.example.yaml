@@ -1,0 +1,50 @@
+---
+# Schema host. The hook writes URLs of the form
+#   https://<domain>/<apiGroup>/<kind_lowercase>_<apiVersion>.json
+# unless an override matches first.
+domain: k8s-schemas.home-operations.com
+
+# Optional. Default false. When true, the hook also adds directives to core
+# resources (apiVersion without a group like `v1`, `apps/v1`).
+include_core: false
+
+# Optional. Default `core`. Used as the {apiGroup} placeholder for core resources.
+core_group: core
+
+# Optional. Defaults to the URL pattern shown above.
+# Available placeholders: {domain} {apiGroup} {apiVersion} {apiVersionFull}
+#                         {kind} {kind_lower} {kind_lowercase} {file}
+# schema_template: "https://{domain}/{apiGroup}/{kind_lowercase}_{apiVersion}.json"
+
+# Per-rule overrides. The first matching rule wins. The schema field may use
+# the placeholders above; rules without `{` are treated as literal URLs.
+overrides:
+  # Use schemastore's kustomization schema instead of synthesising one.
+  - name: kustomize
+    match:
+      apiGroup: kustomize.config.k8s.io
+    schema: https://json.schemastore.org/kustomization
+
+  # When a HelmRelease's chartRef points to the bjw-s-labs app-template OCI
+  # chart, swap in the app-template-aware HelmRelease schema published in
+  # this site's /extras/ tree.
+  - name: helmrelease-app-template
+    match:
+      kind: HelmRelease
+      chartRefOciUrl: oci://ghcr.io/bjw-s-labs/helm/app-template
+    schema: https://{domain}/extras/bjw-s-labs/app-template/helmrelease-helm-v2.schema.json
+
+  # Example: route a kind by file path instead of apiVersion.
+  # - name: prometheusrule-by-path
+  #   match:
+  #     file_regex: /prometheus/.*\.yaml$
+  #     kind: PrometheusRule
+  #   schema: https://example.com/prometheusrule.schema.json
+
+  # Example: route by a value at an arbitrary JMESPath inside the document.
+  # - name: oci-chart-by-jmespath
+  #   match:
+  #     kind: HelmRelease
+  #     jmespath: spec.chart.spec.sourceRef.name
+  #     equals: my-chart
+  #   schema: https://example.com/my-chart.schema.json

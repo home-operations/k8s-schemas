@@ -1,0 +1,22 @@
+[project]
+name = "k8s-yaml-schema-hook"
+version = "0.1.0"
+description = "Insert or update yaml-language-server $schema directives in Kubernetes YAML manifests."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+dependencies = [
+  "jmespath>=1.0",
+  "ruamel.yaml>=0.18",
+]
+
+[project.scripts]
+k8s-yaml-schema = "k8s_yaml_schema:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "hooks" }
+py-modules = ["k8s_yaml_schema"]

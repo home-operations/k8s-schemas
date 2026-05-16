@@ -4,3 +4,9 @@ sources/**/vendor/
 sources/**/vendir.lock.yml
 extras/**/vendor/
 extras/**/vendir.lock.yml
+
+# Python build artifacts (from `uv build` / `pip install -e .`)
+/build/
+/dist/
+*.egg-info/
+__pycache__/
