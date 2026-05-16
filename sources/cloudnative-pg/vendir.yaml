@@ -1,0 +1,12 @@
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor
+    contents:
+      - path: cloudnative-pg
+        githubRelease:
+          slug: cloudnative-pg/cloudnative-pg
+          tag: v1.29.1
+          assetNames:
+            - cnpg-\d+\.\d+\.\d+\.yaml
+          disableAutoChecksumValidation: true
