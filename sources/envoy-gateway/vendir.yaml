@@ -1,0 +1,12 @@
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor
+    contents:
+      - path: envoy-gateway
+        githubRelease:
+          slug: envoyproxy/gateway
+          tag: v1.8.0
+          assetNames:
+            - envoy-gateway-crds.yaml
+          disableAutoChecksumValidation: true
