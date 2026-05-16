@@ -8,4 +8,4 @@ directories:
           url: https://github.com/ceph/csi-operator
           ref: v0.6.0
         includePaths:
-          - deploy/charts/ceph-csi-operator/templates/*-crd.yaml
+          - config/crd/bases/*.yaml
