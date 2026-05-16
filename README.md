@@ -31,7 +31,7 @@ kind you want, and copy its schema URL into a magic comment at the top of
 your manifest:
 
 ```yaml
-# yaml-language-server: $schema=https://hk8s-schemas.ome-operations.com/cert-manager.io/certificate_v1.json
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/cert-manager.io/certificate_v1.json
 apiVersion: cert-manager.io/v1
 kind: Certificate
 # ...

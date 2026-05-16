@@ -5,8 +5,9 @@ directories:
   - path: vendor
     contents:
       - path: .
-        git:
-          url: https://github.com/kedacore/keda
-          ref: v2.19.0
-        includePaths:
-          - config/crd/bases/*.yaml
+        githubRelease:
+          slug: kedacore/keda
+          tag: v2.19.0
+          assetNames:
+            - keda-*-crds.yaml
+          disableAutoChecksumValidation: true
