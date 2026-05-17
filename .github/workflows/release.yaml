@@ -5,12 +5,12 @@ name: Release
 on:
   push:
     branches:
-      - "main"
+      - main
     paths:
-      - "sources/**/vendir.yml"
-      - "scripts/**"
-      - ".mise.toml"
-      - ".github/workflows/release.yaml"
+      - sources/**/vendir.yml
+      - scripts/**
+      - .mise.toml
+      - .github/workflows/release.yaml
   workflow_dispatch:
 
 concurrency:
@@ -51,7 +51,7 @@ jobs:
 
   build:
     needs:
-      - "prepare"
+      - prepare
     name: Build ${{ matrix.source.name }}
     runs-on: ubuntu-latest
     permissions:
@@ -72,24 +72,23 @@ jobs:
         with:
           experimental: true
 
-      # Per-source vendir cache. Key includes the source name and a hash of
-      # only that source's vendir.yml, so a single Renovate bump only
-      # invalidates the affected source's cache — every other matrix job
-      # restores instantly.
-      - name: Restore vendir cache
+      # Cache vendir's *output* (the synced vendor/ tree) — not its internal
+      # cache, which doesn't apply to git clones or release downloads. On
+      # cache hit, build.sh skips `vendir sync` entirely. Key invalidates only
+      # when this source's vendir.yml changes.
+      - name: Restore vendor cache
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
-          path: ~/.cache/vendir
-          key: vendir-${{ runner.os }}-${{ matrix.source.name }}-${{ hashFiles(format('{0}/vendir.yml', matrix.source.dir)) }}
+          path: out/vendor/${{ matrix.source.artifact }}
+          key: vendor-${{ runner.os }}-${{ matrix.source.name }}-${{ hashFiles(format('{0}/vendir.yml', matrix.source.dir)) }}
           restore-keys: |
-            vendir-${{ runner.os }}-${{ matrix.source.name }}-
+            vendor-${{ runner.os }}-${{ matrix.source.name }}-
 
       - name: Extract CRDs
         env:
           VENDIR_GITHUB_API_TOKEN: ${{ github.token }}
-        run: |
-          export VENDIR_CACHE_DIR="$HOME/.cache/vendir"
-          mise run build "${{ matrix.source.dir }}" "${{ matrix.source.out }}"
+          VENDOR_CACHE: ${{ github.workspace }}/out/vendor/${{ matrix.source.artifact }}
+        run: mise run build "${{ matrix.source.dir }}" "${{ matrix.source.out }}"
 
       - name: Upload CRDs artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

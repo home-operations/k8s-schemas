@@ -18,11 +18,26 @@ SOURCE_DIR="$(cd "${SOURCE_DIR%/}" && pwd)"
 
 mkdir -p "$(dirname "$OUTPUT_FILE")"
 
-WORK="$(mktemp -d)"
-trap 'rm -rf "$WORK"' EXIT
+# When the workflow sets $VENDOR_CACHE we use a stable per-source directory
+# that actions/cache can persist between runs. Otherwise fall back to a temp
+# dir (local dev, ad-hoc invocations).
+if [[ -n "${VENDOR_CACHE:-}" ]]; then
+  WORK="$VENDOR_CACHE"
+  mkdir -p "$WORK"
+else
+  WORK="$(mktemp -d)"
+  trap 'rm -rf "$WORK"' EXIT
+fi
 
-cp "$SOURCE_DIR/vendir.yml" "$WORK/"
-vendir sync --chdir "$WORK" >&2
+# Skip vendir sync if a vendor tree already exists for the current vendir.yml
+# (cache hit path). On miss the dir is empty or its vendir.yml differs.
+if [[ -d "$WORK/vendor" ]] && diff -q "$SOURCE_DIR/vendir.yml" "$WORK/vendir.yml" >/dev/null 2>&1; then
+  echo "vendor/ cached for $SOURCE_DIR — skipping vendir sync" >&2
+else
+  rm -rf "$WORK/vendor" "$WORK/vendir.lock.yml" "$WORK/vendir.yml"
+  cp "$SOURCE_DIR/vendir.yml" "$WORK/"
+  vendir sync --chdir "$WORK" >&2
+fi
 
 # Strip any inline helm template directives so files like longhorn-manager's
 # k8s/crds.yaml parse as plain YAML. Safe for CRDs — neither openAPIV3Schema
