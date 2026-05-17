@@ -7,9 +7,7 @@ on:
     branches:
       - main
     paths:
-      - sources/**/vendir.yml
-      - sources/**/kind.yaml
-      - sources/**/extract.yaml
+      - sources/**
       - scripts/**
       - .mise.toml
       - .github/workflows/release.yaml
