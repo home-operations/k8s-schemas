@@ -18,6 +18,12 @@ fetches that upstream's CRDs at the pinned version, keeps only the
 [`crd-schema-publisher`](https://github.com/sholdee/crd-schema-publisher),
 which renders a single searchable docs site.
 
+A handful of operators (KubeVirt, CDI, …) only register their CRDs at install
+time rather than shipping them as static YAML. Those sources add a `kind.yaml`
+alongside the `vendir.yml`; the build spins up a throwaway
+[kind](https://kind.sigs.k8s.io/) cluster, lets the operator reconcile, and
+dumps the registered CRDs.
+
 The site is published to GitHub Pages and the same payload is pushed as a
 OCI artifact, signed with cosign. Renovate watches every source file natively
 and opens a PR when an upstream cuts a release.
@@ -62,10 +68,13 @@ To add a new upstream CRD source:
      This is the cleanest path because we just grab a pre-rendered file.
    - `git` — upstream ships raw CRD YAMLs in their tree at a tag we can
      pin. We sparse-check-out only the listed paths.
+   - `kind` — upstream is an operator that registers its CRDs at runtime,
+     not as static YAML. See [Operator-runtime sources](#operator-runtime-sources)
+     below.
 
-   Anything more involved (rendering a helm chart, mirroring an upstream
-   that doesn't publish anything usable) is out of scope here — open an
-   issue and we'll talk about it.
+   Rendering a helm chart is intentionally out of scope — open an issue if
+   you hit a chart whose CRDs only materialize via `helm template --set ...`
+   (values-dependent generation, not just inert `{{ }}` decoration).
 
 3. **Create `sources/<owner>/<repo>/vendir.yml`.** Folders are nested by
    GitHub owner so two upstreams can never collide. Use one of these two
@@ -122,6 +131,29 @@ To add a new upstream CRD source:
 5. **Open a pull request.** The PR workflow builds only the sources you
    touched. On merge to `main`, the release workflow rebuilds everything,
    redeploys the Pages site, and pushes a new OCI artifact.
+
+### Operator-runtime sources
+
+For an operator whose CRDs only exist after the operator reconciles a CR (the
+KubeVirt and CDI pattern), the source directory holds two files instead of
+one — the upstream-published install manifest and trigger CR are both fetched
+by `vendir`:
+
+```sh
+sources/<owner>/<repo>/
+├── vendir.yml     # fetches install manifest into vendor/operator/ and
+│                  # the trigger CR (e.g. kubevirt-cr.yaml) into vendor/cr/
+└── kind.yaml      # kind.x-k8s.io/v1alpha4 Cluster spec — a minimal stub
+                   # is usually fine; pin a node image, enable a feature
+                   # gate, etc. only if the operator needs it.
+```
+
+The build runs both YAMLs through a throwaway kind cluster: apply the
+operator, wait for it to come up, apply the CR, wait for `Available=True`,
+then `kubectl get crd -o yaml`. Renovate bumps both the install manifest
+and the CR together since they share a release tag.
+
+See `sources/kubevirt/kubevirt/` for the canonical shape.
 
 ## Maintaining a fork
 

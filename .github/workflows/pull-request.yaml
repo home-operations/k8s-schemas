@@ -17,12 +17,15 @@ jobs:
         id: changed-files
         uses: bjw-s-labs/action-changed-files@a9a36fb08ce06db9b02fbd8026cc2c0945eb9841 # v0.6.0
         with:
-          patterns: sources/**/vendir.yml
+          patterns: |
+            sources/**/vendir.yml
+            sources/**/kind.yaml
 
       - name: Build matrix
         id: matrix
-        # Each changed path looks like "sources/<org>/<repo>/vendir.yml".
-        # Pre-compute everything a build step needs so the matrix step is trivial.
+        # Each changed path looks like "sources/<org>/<repo>/(vendir|kind).yaml".
+        # Splitting by '/' and taking [1:3] yields the same owner/repo for
+        # either filename, so unique_by(.name) dedupes when both change.
         run: |
           matrix=$(jq -c '
             [ .[]
@@ -65,9 +68,7 @@ jobs:
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: out/vendor/${{ matrix.source.artifact }}
-          key: vendor-${{ runner.os }}-${{ matrix.source.name }}-${{ hashFiles(format('{0}/vendir.yml', matrix.source.dir)) }}
-          restore-keys: |
-            vendor-${{ runner.os }}-${{ matrix.source.name }}-
+          key: vendor-${{ runner.os }}-${{ matrix.source.name }}-${{ hashFiles(format('{0}/vendir.yml', matrix.source.dir), format('{0}/kind.yaml', matrix.source.dir), 'scripts/build.sh', 'scripts/kind-extract.sh') }}
 
       - name: Extract CRDs
         env:
