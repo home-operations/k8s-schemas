@@ -1,0 +1,12 @@
+---
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor
+    contents:
+      - path: .
+        git:
+          url: https://github.com/gravitational/teleport
+          ref: v18.8.1
+        includePaths:
+          - integrations/operator/config/crd/bases/*.yaml
