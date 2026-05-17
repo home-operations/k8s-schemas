@@ -23,6 +23,7 @@ fi
 hash_inputs() {
     cat "$SOURCE_DIR/vendir.yml"
     [[ -f "$SOURCE_DIR/kind.yaml" ]] && cat "$SOURCE_DIR/kind.yaml"
+    [[ -f "$SOURCE_DIR/extract.yaml" ]] && cat "$SOURCE_DIR/extract.yaml"
     cat scripts/build.sh scripts/kind-extract.sh
 }
 HASH="$(hash_inputs | sha256sum | cut -d' ' -f1)"
