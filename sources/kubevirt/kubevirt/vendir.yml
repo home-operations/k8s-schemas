@@ -1,0 +1,25 @@
+---
+# Operator install manifest and trigger CR are fetched separately so
+# kind-extract.sh can apply them in order — install first, CR after the
+# operator's CRDs are Established.
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor/operator
+    contents:
+      - path: .
+        githubRelease:
+          slug: kubevirt/kubevirt
+          tag: v1.8.2
+          assetNames:
+            - kubevirt-operator.yaml
+          disableAutoChecksumValidation: true
+  - path: vendor/cr
+    contents:
+      - path: .
+        githubRelease:
+          slug: kubevirt/kubevirt
+          tag: v1.8.2
+          assetNames:
+            - kubevirt-cr.yaml
+          disableAutoChecksumValidation: true

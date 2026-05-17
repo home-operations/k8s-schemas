@@ -7,6 +7,8 @@ OUT_DIR = "{{config_root}}/out"
 
 [tools]
 "aqua:carvel-dev/vendir" = "0.45.3"
+"aqua:kubernetes-sigs/kind" = "0.31.0"
+"aqua:kubernetes/kubernetes/kubectl" = "1.36.1"
 "aqua:mikefarah/yq" = "4.53.2"
 "aqua:chmln/sd" = "1.1.0"
 "aqua:jqlang/jq" = "1.8.1"

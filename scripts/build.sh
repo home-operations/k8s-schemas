@@ -1,55 +1,59 @@
 #!/usr/bin/env bash
-# Extract CRDs from a single source into a YAML file.
-# Usage: build.sh <source-dir> <output-file>
-#
-# Reads <source-dir>/vendir.yml, runs `vendir sync` in a scratch dir, and
-# yq-filters the vendored tree into one multi-doc YAML containing only the
-# CustomResourceDefinition documents. The result is then ingested by
-# crd-schema-publisher in the publish step.
-
 set -euo pipefail
 shopt -s globstar nullglob
 
 SOURCE_DIR="${1:?usage: build.sh <source-dir> <output-file>}"
 OUTPUT_FILE="${2:?usage: build.sh <source-dir> <output-file>}"
-
-# Resolve to absolute so vendir --chdir doesn't lose the path.
 SOURCE_DIR="$(cd "${SOURCE_DIR%/}" && pwd)"
-
 mkdir -p "$(dirname "$OUTPUT_FILE")"
 
-# When the workflow sets $VENDOR_CACHE we use a stable per-source directory
-# that actions/cache can persist between runs. Otherwise fall back to a temp
-# dir (local dev, ad-hoc invocations).
+# $VENDOR_CACHE = persistent workdir (actions/cache); unset = tmp.
 if [[ -n "${VENDOR_CACHE:-}" ]]; then
-  WORK="$VENDOR_CACHE"
-  mkdir -p "$WORK"
+    WORK="$VENDOR_CACHE"
+    mkdir -p "$WORK"
 else
-  WORK="$(mktemp -d)"
-  trap 'rm -rf "$WORK"' EXIT
+    WORK="$(mktemp -d)"
+    trap 'rm -rf "$WORK"' EXIT
 fi
 
-# Skip vendir sync if a vendor tree already exists for the current vendir.yml
-# (cache hit path). On miss the dir is empty or its vendir.yml differs.
-if [[ -d "$WORK/vendor" ]] && diff -q "$SOURCE_DIR/vendir.yml" "$WORK/vendir.yml" >/dev/null 2>&1; then
-  echo "vendor/ cached for $SOURCE_DIR — skipping vendir sync" >&2
+# Single cache decision: if every input is byte-identical to the last
+# successful run, the stored output is reusable. Mirrors what the workflow's
+# actions/cache key encodes, but also gives local persistent-$WORK users the
+# same fast-path.
+hash_inputs() {
+    cat "$SOURCE_DIR/vendir.yml"
+    [[ -f "$SOURCE_DIR/kind.yaml" ]] && cat "$SOURCE_DIR/kind.yaml"
+    cat scripts/build.sh scripts/kind-extract.sh
+}
+HASH="$(hash_inputs | sha256sum | cut -d' ' -f1)"
+
+if [[ -f "$WORK/output.yaml" && "$(cat "$WORK/.hash" 2>/dev/null)" == "$HASH" ]]; then
+    echo "cached for $SOURCE_DIR — reusing previous output" >&2
+    cp "$WORK/output.yaml" "$OUTPUT_FILE"
+    exit
+fi
+
+# Clean slate. A partial leftover from a previous run's failure could otherwise
+# mix with this run's vendor/.
+rm -rf "$WORK"/{vendor,vendir.lock.yml,vendir.yml,output.yaml,.hash}
+cp "$SOURCE_DIR/vendir.yml" "$WORK/"
+vendir sync --chdir "$WORK" >&2
+
+if [[ -f "$SOURCE_DIR/kind.yaml" ]]; then
+    ./scripts/kind-extract.sh "$SOURCE_DIR" "$WORK" "$OUTPUT_FILE"
 else
-  rm -rf "$WORK/vendor" "$WORK/vendir.lock.yml" "$WORK/vendir.yml"
-  cp "$SOURCE_DIR/vendir.yml" "$WORK/"
-  vendir sync --chdir "$WORK" >&2
+    # Strip inline helm directives — no standard CRD field contains `{{...}}`.
+    find "$WORK/vendor" -name '*.yaml' -exec sd '\{\{[^}]*\}\}' '' {} \;
+
+    files=("$WORK"/vendor/**/*.yaml "$WORK"/vendor/**/*.yml)
+    [[ ${#files[@]} -gt 0 ]] || { echo "vendir produced no YAML files for $SOURCE_DIR" >&2; exit 1; }
+
+    yq eval-all 'select(.kind == "CustomResourceDefinition")' "${files[@]}" > "$OUTPUT_FILE"
 fi
-
-# Strip any inline helm template directives so files like longhorn-manager's
-# k8s/crds.yaml parse as plain YAML. Safe for CRDs — neither openAPIV3Schema
-# nor any standard CRD field contains literal `{{...}}`.
-find "$WORK/vendor" -name '*.yaml' -exec sd '\{\{[^}]*\}\}' '' {} \;
-
-files=("$WORK"/vendor/**/*.yaml "$WORK"/vendor/**/*.yml)
-if (( ${#files[@]} == 0 )); then
-  echo "vendir produced no YAML files for $SOURCE_DIR" >&2
-  exit 1
-fi
-
-yq eval-all 'select(.kind == "CustomResourceDefinition")' "${files[@]}" > "$OUTPUT_FILE"
 
 [[ -s "$OUTPUT_FILE" ]] || { echo "no CRDs extracted from $SOURCE_DIR" >&2; exit 1; }
+
+# Commit cache only on success. Output first, hash second — a crash between
+# the two leaves a stale-looking hash that won't falsely match next run.
+cp "$OUTPUT_FILE" "$WORK/output.yaml"
+echo "$HASH" > "$WORK/.hash"

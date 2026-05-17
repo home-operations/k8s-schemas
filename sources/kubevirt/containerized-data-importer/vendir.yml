@@ -1,0 +1,22 @@
+---
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor/operator
+    contents:
+      - path: .
+        githubRelease:
+          slug: kubevirt/containerized-data-importer
+          tag: v1.65.0
+          assetNames:
+            - cdi-operator.yaml
+          disableAutoChecksumValidation: true
+  - path: vendor/cr
+    contents:
+      - path: .
+        githubRelease:
+          slug: kubevirt/containerized-data-importer
+          tag: v1.65.0
+          assetNames:
+            - cdi-cr.yaml
+          disableAutoChecksumValidation: true
