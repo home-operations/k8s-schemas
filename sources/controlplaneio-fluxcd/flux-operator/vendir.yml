@@ -1,8 +1,11 @@
 ---
+# Trigger CR is inline — flux-operator doesn't publish a sample FluxInstance
+# as a release asset, and `distribution.version: "2.x"` is a moving target
+# Renovate can't track.
 apiVersion: vendir.k14s.io/v1alpha1
 kind: Config
 directories:
-  - path: vendor
+  - path: vendor/operator
     contents:
       - path: .
         githubRelease:
@@ -11,3 +14,20 @@ directories:
           assetNames:
             - install.yaml
           disableAutoChecksumValidation: true
+  - path: vendor/cr
+    contents:
+      - path: .
+        inline:
+          paths:
+            fluxinstance.yaml: |
+              ---
+              apiVersion: fluxcd.controlplane.io/v1
+              kind: FluxInstance
+              metadata:
+                name: flux
+                namespace: flux-system
+              spec:
+                distribution:
+                  version: "2.x"
+                  registry: ghcr.io/fluxcd
+                  artifact: oci://ghcr.io/controlplaneio-fluxcd/flux-operator-manifests:latest

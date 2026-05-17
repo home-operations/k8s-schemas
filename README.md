@@ -143,17 +143,21 @@ by `vendir`:
 sources/<owner>/<repo>/
 ├── vendir.yml     # fetches install manifest into vendor/operator/ and
 │                  # the trigger CR (e.g. kubevirt-cr.yaml) into vendor/cr/
-└── kind.yaml      # kind.x-k8s.io/v1alpha4 Cluster spec — a minimal stub
-                   # is usually fine; pin a node image, enable a feature
-                   # gate, etc. only if the operator needs it.
+├── kind.yaml      # kind.x-k8s.io/v1alpha4 Cluster spec — a minimal stub
+│                  # is usually fine; pin a node image, enable a feature
+│                  # gate, etc. only if the operator needs it.
+└── extract.yaml   # optional; override the default `Available` readiness
+                   # condition (e.g. `readyCondition: Ready`).
 ```
 
 The build runs both YAMLs through a throwaway kind cluster: apply the
-operator, wait for it to come up, apply the CR, wait for `Available=True`,
-then `kubectl get crd -o yaml`. Renovate bumps both the install manifest
-and the CR together since they share a release tag.
+operator, wait for it to come up, apply the CR, wait for the readiness
+condition, then `kubectl get crd -o yaml`. Renovate bumps both the install
+manifest and the CR together since they share a release tag.
 
-See `sources/kubevirt/kubevirt/` for the canonical shape.
+See `sources/kubevirt/kubevirt/` for the canonical shape and
+`sources/controlplaneio-fluxcd/flux-operator/` for the inline-vendir trigger
+CR and `extract.yaml` override.
 
 ## Maintaining a fork
 
