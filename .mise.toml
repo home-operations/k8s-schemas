@@ -17,12 +17,8 @@ OUT_DIR = "{{config_root}}/out"
 description = "Extract CRDs from one source (usage: mise run build <source-dir> <output-file>)"
 run = "./scripts/build.sh"
 
-[tasks.extra]
-description = "Vendor one extras source (usage: mise run extra <source-dir> <output-dir>)"
-run = "./scripts/extras.sh"
-
 [tasks.all]
-description = "Build every source, render the site, and stage extras"
+description = "Build every source and render the site locally"
 run = """
 set -eu
 rm -rf "$OUT_DIR"
@@ -32,10 +28,6 @@ for dir in sources/*/*/; do
   ./scripts/build.sh "$dir" "$OUT_DIR/crds/$name.yaml"
 done
 crd-schema-publisher convert -d "$OUT_DIR/crds" -o "$OUT_DIR/site" --render
-for dir in extras/*/*/; do
-  name=$(basename "$(dirname "$dir")")/$(basename "$dir")
-  ./scripts/extras.sh "$dir" "$OUT_DIR/site/extras/$name"
-done
 """
 
 [tasks.clean]

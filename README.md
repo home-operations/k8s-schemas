@@ -41,15 +41,6 @@ The [Red Hat YAML extension](https://marketplace.visualstudio.com/items?itemName
 for VS Code and most other YAML language-server integrations honor this
 comment.
 
-## Extras
-
-A small `extras/` tree lets the same pipeline publish hand-curated JSON
-schemas that aren't CRDs (e.g. the bjw-s app-template HelmRelease schema).
-Each source uses the same `vendir.yml` shape as the CRD sources but the
-build copies the selected files verbatim into `out/site/extras/<owner>/<name>/`.
-Use this for narrow, schema-shaped artifacts only — anything that needs
-rendering or transformation belongs upstream.
-
 ## Contributing
 
 To add a new upstream CRD source:
