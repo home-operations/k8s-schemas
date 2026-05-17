@@ -71,8 +71,9 @@ jobs:
       - name: Extract CRDs
         env:
           VENDIR_GITHUB_API_TOKEN: ${{ github.token }}
-          VENDIR_CACHE_DIR: ${{ github.workspace }}/../.cache/vendir
-        run: mise run build "${{ matrix.source.dir }}" "${{ matrix.source.out }}"
+        run: |
+          export VENDIR_CACHE_DIR="$HOME/.cache/vendir"
+          mise run build "${{ matrix.source.dir }}" "${{ matrix.source.out }}"
 
   status:
     if: ${{ !cancelled() }}
