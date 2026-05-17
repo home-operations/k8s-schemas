@@ -13,35 +13,17 @@ jobs:
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          persist-credentials: false
-
       - name: Get changed files
         id: changed-files
         uses: bjw-s-labs/action-changed-files@a9a36fb08ce06db9b02fbd8026cc2c0945eb9841 # v0.6.0
         with:
-          patterns: |-
-            sources/**/vendir.yml
-            scripts/**
-            .mise.toml
-            .github/workflows/pull-request.yaml
+          patterns: sources/**/vendir.yml
 
       - name: Build matrix
         id: matrix
-        # Any non-source change (scripts, mise, workflow) rebuilds every source.
+        # Each changed path looks like "sources/<org>/<repo>/vendir.yml".
+        # Pre-compute everything a build step needs so the matrix step is trivial.
         run: |
-          changed='${{ steps.changed-files.outputs.changed_files }}'
-          if jq -e 'any(.[]; test("^sources/[^/]+/[^/]+/vendir\\.yml$") | not)' <<< "$changed" > /dev/null; then
-            mapfile -t candidates < <(printf '%s\n' sources/*/*/vendir.yml)
-          else
-            mapfile -t candidates < <(jq -r '.[]' <<< "$changed")
-          fi
-          paths='[]'
-          for p in "${candidates[@]}"; do
-            [[ -f "$p" ]] && paths=$(jq -c --arg p "$p" '. + [$p]' <<< "$paths")
-          done
           matrix=$(jq -c '
             [ .[]
               | (split("/") | .[1:3]) as $p
@@ -51,7 +33,7 @@ jobs:
                   out:  ("out/crds/" + ($p | join("__")) + ".yaml")
                 }
             ] | unique_by(.name)
-          ' <<< "$paths")
+          ' <<< '${{ steps.changed-files.outputs.changed_files }}')
           echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
 
   build:
