@@ -1,0 +1,12 @@
+---
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor
+    contents:
+      - path: .
+        git:
+          url: https://github.com/agabani/tor-operator
+          ref: v1.0.10
+        includePaths:
+          - docs/custom_resource_definitions/*.yaml
