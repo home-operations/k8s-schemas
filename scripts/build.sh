@@ -24,6 +24,11 @@ trap 'rm -rf "$WORK"' EXIT
 cp "$SOURCE_DIR/vendir.yml" "$WORK/"
 vendir sync --chdir "$WORK" >&2
 
+# Strip any inline helm template directives so files like longhorn-manager's
+# k8s/crds.yaml parse as plain YAML. Safe for CRDs — neither openAPIV3Schema
+# nor any standard CRD field contains literal `{{...}}`.
+find "$WORK/vendor" -name '*.yaml' -exec sd '\{\{[^}]*\}\}' '' {} \;
+
 files=("$WORK"/vendor/**/*.yaml "$WORK"/vendor/**/*.yml)
 if (( ${#files[@]} == 0 )); then
   echo "vendir produced no YAML files for $SOURCE_DIR" >&2
