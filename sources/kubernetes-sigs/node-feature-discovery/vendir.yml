@@ -8,6 +8,7 @@ directories:
         git:
           url: https://github.com/kubernetes-sigs/node-feature-discovery
           ref: v0.18.3
+          skipInitSubmodules: true
         includePaths:
           - deployment/base/nfd-crds/nfd-api-crds.yaml
           - deployment/base/noderesourcetopologies-crd/noderesourcetopologies.yaml

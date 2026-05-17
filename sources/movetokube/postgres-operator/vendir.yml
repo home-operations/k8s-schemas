@@ -8,5 +8,6 @@ directories:
         git:
           url: https://github.com/movetokube/postgres-operator
           ref: "2.4.0"
+          skipInitSubmodules: true
         includePaths:
           - config/crd/bases/*.yaml

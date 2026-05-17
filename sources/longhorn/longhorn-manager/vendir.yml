@@ -8,5 +8,6 @@ directories:
         git:
           url: https://github.com/longhorn/longhorn-manager
           ref: v1.11.2
+          skipInitSubmodules: true
         includePaths:
           - k8s/crds.yaml

@@ -8,5 +8,6 @@ directories:
         git:
           url: https://github.com/kubernetes-sigs/external-dns
           ref: v0.21.0
+          skipInitSubmodules: true
         includePaths:
           - config/crd/standard/*.yaml

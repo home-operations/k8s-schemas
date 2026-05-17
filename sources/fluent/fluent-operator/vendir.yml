@@ -8,5 +8,6 @@ directories:
         git:
           url: https://github.com/fluent/fluent-operator
           ref: v3.7.0
+          skipInitSubmodules: true
         includePaths:
           - config/crd/bases/*.yaml

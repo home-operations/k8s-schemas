@@ -8,5 +8,6 @@ directories:
         git:
           url: https://github.com/argoproj/argo-cd
           ref: v3.4.2
+          skipInitSubmodules: true
         includePaths:
           - manifests/crds/*-crd.yaml

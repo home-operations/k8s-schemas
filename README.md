@@ -102,6 +102,7 @@ To add a new upstream CRD source:
            git:
              url: https://github.com/<owner>/<repo>
              ref: <upstream-tag>
+             skipInitSubmodules: true
              includePaths:
                - config/crd/bases/*.yaml
    ```

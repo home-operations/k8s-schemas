@@ -8,5 +8,6 @@ directories:
         git:
           url: https://github.com/istio/istio
           ref: "1.29.2"
+          skipInitSubmodules: true
         includePaths:
           - manifests/charts/base/files/crd-all.gen.yaml
