@@ -48,7 +48,7 @@ jobs:
       matrix:
         source: ${{ fromJSON(needs.changed.outputs.matrix) }}
       fail-fast: false
-      max-parallel: 4
+      max-parallel: 10
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -60,15 +60,24 @@ jobs:
         with:
           experimental: true
 
+      - name: Restore vendir cache
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/.cache/vendir
+          key: vendir-${{ runner.os }}-${{ matrix.source.name }}-${{ hashFiles(format('{0}/vendir.yml', matrix.source.dir)) }}
+          restore-keys: |
+            vendir-${{ runner.os }}-${{ matrix.source.name }}-
+
       - name: Extract CRDs
         env:
           VENDIR_GITHUB_API_TOKEN: ${{ github.token }}
+          VENDIR_CACHE_DIR: ${{ github.workspace }}/../.cache/vendir
         run: mise run build "${{ matrix.source.dir }}" "${{ matrix.source.out }}"
 
   status:
     if: ${{ !cancelled() }}
     needs:
-      - "build"
+      - build
     name: Build Success
     runs-on: ubuntu-latest
     steps:
