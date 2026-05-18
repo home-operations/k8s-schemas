@@ -158,25 +158,3 @@ manifest and the CR together since they share a release tag.
 See `sources/kubevirt/kubevirt/` for the canonical shape and
 `sources/controlplaneio-fluxcd/flux-operator/` for the inline-vendir trigger
 CR and `extract.yaml` override.
-
-## Maintaining a fork
-
-This repository follows the home-operations conventions for CI and Renovate.
-If you fork it:
-
-1. **Set up a Renovate GitHub App** following the instructions
-   [here](https://github.com/renovatebot/github-action). Store the
-   credentials as repository secrets named `BOT_APP_ID` and
-   `BOT_APP_PRIVATE_KEY`.
-
-2. **Enable GitHub Pages** with **Source: GitHub Actions** in the
-   repository settings.
-
-3. **Use lowercase names.** GHCR requires the owner and repository name to
-   be entirely lowercase.
-
-4. **Enable auto-merge** under repo Settings → General, then add a branch
-   protection rule on `main` requiring the `Build Success` status check.
-   Renovate's package rule already sets `automerge: true` for vendir updates,
-   so once `Build Success` is required, version bumps will land
-   automatically when CI passes.
