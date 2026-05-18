@@ -14,7 +14,7 @@ OUT_DIR = "{{config_root}}/out"
 "aqua:jqlang/jq" = "1.8.1"
 "aqua:fluxcd/flux2" = "2.8.7"
 "aqua:sigstore/cosign" = "3.0.6"
-"ubi:sholdee/crd-schema-publisher" = "2026.515.13351"
+"ubi:sholdee/crd-schema-publisher" = "2026.518.82822"
 
 [tasks.build]
 description = "Extract CRDs from one source (usage: mise run build <source-dir> <output-file>)"
