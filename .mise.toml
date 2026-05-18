@@ -36,3 +36,6 @@ crd-schema-publisher convert -d "$OUT_DIR/crds" -o "$OUT_DIR/site" --render
 [tasks.clean]
 description = "Remove build and site artifacts"
 run = 'rm -rf "$OUT_DIR"'
+
+[hooks]
+postinstall = "lefthook install"
