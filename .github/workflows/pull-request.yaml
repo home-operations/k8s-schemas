@@ -6,10 +6,15 @@ on:
   merge_group:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   changed:
     name: Discover changed sources
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
@@ -25,6 +30,8 @@ jobs:
         # Each changed path looks like "sources/<org>/<repo>/(vendir|kind|extract).yaml".
         # Splitting by '/' and taking [1:3] yields the same owner/repo for
         # any filename, so unique_by(.name) dedupes when multiple change.
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.changed_files }}
         run: |
           matrix=$(jq -c '
             [ .[]
@@ -36,7 +43,7 @@ jobs:
                   artifact: ("crds-" + ($p | join("__")))
                 }
             ] | unique_by(.name)
-          ' <<< '${{ steps.changed-files.outputs.changed_files }}')
+          ' <<< "$CHANGED_FILES")
           echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
 
   build:
@@ -81,6 +88,7 @@ jobs:
       - build
     name: Build Success
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
       - name: Any jobs failed?
         if: ${{ contains(needs.*.result, 'failure') }}

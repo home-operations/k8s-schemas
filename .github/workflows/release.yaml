@@ -17,10 +17,15 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
+permissions:
+  contents: read
+
 jobs:
   prepare:
     name: Discover sources
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
@@ -150,12 +155,14 @@ jobs:
           password: ${{ github.token }}
 
       - name: Publish and sign OCI artifact
+        env:
+          REF_NAME: ${{ github.ref_name }}
         run: |-
           digest=$(flux push artifact \
             "oci://ghcr.io/${{ github.repository }}:latest" \
             --path=out/site \
             --source="${{ github.server_url }}/${{ github.repository }}" \
-            --revision="${{ github.ref_name }}@sha1:${{ github.sha }}" \
+            --revision="${REF_NAME}@sha1:${{ github.sha }}" \
             --output=json | jq -r '.repository + "@" + .digest')
           cosign sign --yes "$digest"
 
@@ -166,6 +173,7 @@ jobs:
       - deploy
     name: Release Success
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
       - name: Any jobs failed?
         if: ${{ contains(needs.*.result, 'failure') }}
