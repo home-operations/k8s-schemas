@@ -8,7 +8,7 @@ OUT_DIR = "{{config_root}}/out"
 [tools]
 "aqua:carvel-dev/vendir" = "0.45.3"
 "aqua:chmln/sd" = "1.1.0"
-"aqua:evilmartians/lefthook" = "2.1.6"
+"aqua:evilmartians/lefthook" = "2.1.7"
 "aqua:fluxcd/flux2" = "2.8.7"
 "aqua:google/yamlfmt" = "0.21.0"
 "aqua:jqlang/jq" = "1.8.1"
