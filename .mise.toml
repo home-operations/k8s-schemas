@@ -17,6 +17,7 @@ OUT_DIR = "{{config_root}}/out"
 "aqua:mikefarah/yq" = "4.53.2"
 "aqua:sigstore/cosign" = "3.0.6"
 "ubi:sholdee/crd-schema-publisher" = "2026.519.317"
+"aqua:zizmorcore/zizmor" = "1.25.2"
 
 [tasks.build]
 description = "Extract CRDs from one source (usage: mise run build <source-dir> <output-file>)"
