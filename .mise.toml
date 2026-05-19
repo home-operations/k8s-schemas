@@ -1,6 +1,5 @@
 [settings]
 experimental = true
-locked = true
 
 [env]
 WORKSPACE = "{{config_root}}"
