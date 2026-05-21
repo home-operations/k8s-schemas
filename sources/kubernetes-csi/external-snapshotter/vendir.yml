@@ -1,0 +1,15 @@
+---
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor
+    contents:
+      - path: .
+        git:
+          url: https://github.com/kubernetes-csi/external-snapshotter
+          ref: v8.5.0
+          skipInitSubmodules: true
+        includePaths:
+          - client/config/crd/*.yaml
+        excludePaths:
+          - client/config/crd/kustomization.yaml
