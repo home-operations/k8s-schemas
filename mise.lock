@@ -322,6 +322,40 @@ url = "https://github.com/mikefarah/yq/releases/download/v4.53.2/yq_darwin_amd64
 checksum = "sha256:2aee32f1de46a20672f48c25df3018839798bd509143f2ce05fdab1550ff5592"
 url = "https://github.com/mikefarah/yq/releases/download/v4.53.2/yq_windows_amd64.exe"
 
+[[tools."aqua:sholdee/crd-schema-publisher"]]
+version = "2026.519.317"
+backend = "aqua:sholdee/crd-schema-publisher"
+
+[tools."aqua:sholdee/crd-schema-publisher"."platforms.linux-arm64"]
+checksum = "sha256:fa296b16124361560a25dbcc4cfe46a820ce75d55dd155a5a0c867bed4407939"
+url = "https://github.com/sholdee/crd-schema-publisher/releases/download/v2026.519.317/crd-schema-publisher-linux-arm64"
+provenance = "github-attestations"
+
+[tools."aqua:sholdee/crd-schema-publisher"."platforms.linux-arm64-musl"]
+checksum = "sha256:fa296b16124361560a25dbcc4cfe46a820ce75d55dd155a5a0c867bed4407939"
+url = "https://github.com/sholdee/crd-schema-publisher/releases/download/v2026.519.317/crd-schema-publisher-linux-arm64"
+provenance = "github-attestations"
+
+[tools."aqua:sholdee/crd-schema-publisher"."platforms.linux-x64"]
+checksum = "sha256:0006d13de4a46085adfc23441023f726924dcadd4734a7302117d0de0c78635a"
+url = "https://github.com/sholdee/crd-schema-publisher/releases/download/v2026.519.317/crd-schema-publisher-linux-amd64"
+provenance = "github-attestations"
+
+[tools."aqua:sholdee/crd-schema-publisher"."platforms.linux-x64-musl"]
+checksum = "sha256:0006d13de4a46085adfc23441023f726924dcadd4734a7302117d0de0c78635a"
+url = "https://github.com/sholdee/crd-schema-publisher/releases/download/v2026.519.317/crd-schema-publisher-linux-amd64"
+provenance = "github-attestations"
+
+[tools."aqua:sholdee/crd-schema-publisher"."platforms.macos-arm64"]
+checksum = "sha256:44503fc98b445f46f948131197a2d8bec1e56e95a2235cc23acffe8df561b32b"
+url = "https://github.com/sholdee/crd-schema-publisher/releases/download/v2026.519.317/crd-schema-publisher-darwin-arm64"
+provenance = "github-attestations"
+
+[tools."aqua:sholdee/crd-schema-publisher"."platforms.macos-x64"]
+checksum = "sha256:e6f67f4bb9e184307a47938e8437c55168503f39f56d548ec57ddffb43418def"
+url = "https://github.com/sholdee/crd-schema-publisher/releases/download/v2026.519.317/crd-schema-publisher-darwin-amd64"
+provenance = "github-attestations"
+
 [[tools."aqua:sigstore/cosign"]]
 version = "3.0.6"
 backend = "aqua:sigstore/cosign"
@@ -487,46 +521,6 @@ url = "https://github.com/fluxcd/flux2/releases/download/v2.8.8/flux_2.8.8_windo
 
 [tools.flux2."platforms.windows-x64".provenance.slsa]
 url = "https://github.com/fluxcd/flux2/releases/download/v2.8.8/provenance.intoto.jsonl"
-
-[[tools."github:sholdee/crd-schema-publisher"]]
-version = "2026.519.317"
-backend = "github:sholdee/crd-schema-publisher"
-
-[tools."github:sholdee/crd-schema-publisher"."platforms.linux-arm64"]
-checksum = "sha256:fa296b16124361560a25dbcc4cfe46a820ce75d55dd155a5a0c867bed4407939"
-url = "https://github.com/sholdee/crd-schema-publisher/releases/download/v2026.519.317/crd-schema-publisher-linux-arm64"
-url_api = "https://api.github.com/repos/sholdee/crd-schema-publisher/releases/assets/423738827"
-provenance = "github-attestations"
-
-[tools."github:sholdee/crd-schema-publisher"."platforms.linux-arm64-musl"]
-checksum = "sha256:fa296b16124361560a25dbcc4cfe46a820ce75d55dd155a5a0c867bed4407939"
-url = "https://github.com/sholdee/crd-schema-publisher/releases/download/v2026.519.317/crd-schema-publisher-linux-arm64"
-url_api = "https://api.github.com/repos/sholdee/crd-schema-publisher/releases/assets/423738827"
-provenance = "github-attestations"
-
-[tools."github:sholdee/crd-schema-publisher"."platforms.linux-x64"]
-checksum = "sha256:0006d13de4a46085adfc23441023f726924dcadd4734a7302117d0de0c78635a"
-url = "https://github.com/sholdee/crd-schema-publisher/releases/download/v2026.519.317/crd-schema-publisher-linux-amd64"
-url_api = "https://api.github.com/repos/sholdee/crd-schema-publisher/releases/assets/423738825"
-provenance = "github-attestations"
-
-[tools."github:sholdee/crd-schema-publisher"."platforms.linux-x64-musl"]
-checksum = "sha256:0006d13de4a46085adfc23441023f726924dcadd4734a7302117d0de0c78635a"
-url = "https://github.com/sholdee/crd-schema-publisher/releases/download/v2026.519.317/crd-schema-publisher-linux-amd64"
-url_api = "https://api.github.com/repos/sholdee/crd-schema-publisher/releases/assets/423738825"
-provenance = "github-attestations"
-
-[tools."github:sholdee/crd-schema-publisher"."platforms.macos-arm64"]
-checksum = "sha256:44503fc98b445f46f948131197a2d8bec1e56e95a2235cc23acffe8df561b32b"
-url = "https://github.com/sholdee/crd-schema-publisher/releases/download/v2026.519.317/crd-schema-publisher-darwin-arm64"
-url_api = "https://api.github.com/repos/sholdee/crd-schema-publisher/releases/assets/423738824"
-provenance = "github-attestations"
-
-[tools."github:sholdee/crd-schema-publisher"."platforms.macos-x64"]
-checksum = "sha256:e6f67f4bb9e184307a47938e8437c55168503f39f56d548ec57ddffb43418def"
-url = "https://github.com/sholdee/crd-schema-publisher/releases/download/v2026.519.317/crd-schema-publisher-darwin-amd64"
-url_api = "https://api.github.com/repos/sholdee/crd-schema-publisher/releases/assets/423738826"
-provenance = "github-attestations"
 
 [[tools.jq]]
 version = "1.8.1"
