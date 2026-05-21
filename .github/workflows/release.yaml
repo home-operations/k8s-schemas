@@ -1,5 +1,6 @@
 ---
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
 name: Release
 
 on:
@@ -72,7 +73,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup mise
+      - name: Setup Mise
         uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
         with:
           experimental: true
@@ -159,7 +160,7 @@ jobs:
       - name: Publish and sign OCI artifact
         env:
           REF_NAME: ${{ github.ref_name }}
-        run: |-
+        run: |
           digest=$(flux push artifact \
             "oci://ghcr.io/${{ github.repository }}:latest" \
             --path=out/site \
@@ -180,6 +181,7 @@ jobs:
       - name: Any jobs failed?
         if: ${{ contains(needs.*.result, 'failure') }}
         run: exit 1
+
       - name: All jobs passed or skipped?
         if: ${{ !(contains(needs.*.result, 'failure')) }}
         run: echo "${{ toJSON(needs.*.result) }}"
