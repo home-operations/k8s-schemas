@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/siderolabs/talos
-          ref: v1.13.2
+          ref: v1.13.3
           skipInitSubmodules: true
         includePaths:
           - internal/app/machined/pkg/controllers/k8s/internal/k8stemplates/testdata/talos-service-account-crd.yaml
