@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/kubernetes-csi/external-snapshotter
-          ref: v8.5.0
+          ref: v8.6.0
           skipInitSubmodules: true
         includePaths:
           - client/config/crd/*.yaml
