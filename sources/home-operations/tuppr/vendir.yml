@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/home-operations/tuppr
-          ref: 0.1.38
+          ref: 0.1.39
           skipInitSubmodules: true
         includePaths:
           - config/crd/bases/*.yaml
