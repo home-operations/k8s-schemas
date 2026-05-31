@@ -53,80 +53,79 @@ To add a new upstream CRD source:
 
 1. **Check what the upstream publishes.**
 
-   ```sh
-   gh release view --repo <owner>/<repo>
-   ```
+    ```sh
+    gh release view --repo <owner>/<repo>
+    ```
 
-   Look for a CRDs-only YAML in the release assets (`*-crds.yaml`,
-   `install.yaml`, `bundle.yaml`, etc.). If there isn't one, the next-best
-   option is a stable path of CRD YAMLs in the source tree
-   (`config/crd/bases/`, `pkg/.../crds/`, etc.).
+    Look for a CRDs-only YAML in the release assets (`*-crds.yaml`,
+    `install.yaml`, `bundle.yaml`, etc.). If there isn't one, the next-best
+    option is a stable path of CRD YAMLs in the source tree
+    (`config/crd/bases/`, `pkg/.../crds/`, etc.).
 
 2. **Pick the source type**, in this order:
+    - `githubRelease` — upstream publishes a CRDs YAML as a release asset.
+      This is the cleanest path because we just grab a pre-rendered file.
+    - `git` — upstream ships raw CRD YAMLs in their tree at a tag we can
+      pin. We sparse-check-out only the listed paths.
+    - `kind` — upstream is an operator that registers its CRDs at runtime,
+      not as static YAML. See [Operator-runtime sources](#operator-runtime-sources)
+      below.
 
-   - `githubRelease` — upstream publishes a CRDs YAML as a release asset.
-     This is the cleanest path because we just grab a pre-rendered file.
-   - `git` — upstream ships raw CRD YAMLs in their tree at a tag we can
-     pin. We sparse-check-out only the listed paths.
-   - `kind` — upstream is an operator that registers its CRDs at runtime,
-     not as static YAML. See [Operator-runtime sources](#operator-runtime-sources)
-     below.
-
-   Rendering a helm chart is intentionally out of scope — open an issue if
-   you hit a chart whose CRDs only materialize via `helm template --set ...`
-   (values-dependent generation, not just inert `{{ }}` decoration).
+    Rendering a helm chart is intentionally out of scope — open an issue if
+    you hit a chart whose CRDs only materialize via `helm template --set ...`
+    (values-dependent generation, not just inert `{{ }}` decoration).
 
 3. **Create `sources/<owner>/<repo>/vendir.yml`.** Folders are nested by
    GitHub owner so two upstreams can never collide. Use one of these two
    shapes (the body is identical except for the upstream block):
 
-   GitHub release asset:
+    GitHub release asset:
 
-   ```yaml
-   ---
-   apiVersion: vendir.k14s.io/v1alpha1
-   kind: Config
-   directories:
-     - path: vendor
-       contents:
-         - path: .
-           githubRelease:
-             slug: <owner>/<repo>
-             tag: <upstream-version>
-             assetNames:
-               - <crds-asset-filename>
-             disableAutoChecksumValidation: true
-   ```
+    ```yaml
+    ---
+    apiVersion: vendir.k14s.io/v1alpha1
+    kind: Config
+    directories:
+        - path: vendor
+          contents:
+              - path: .
+                githubRelease:
+                    slug: <owner>/<repo>
+                    tag: <upstream-version>
+                    assetNames:
+                        - <crds-asset-filename>
+                    disableAutoChecksumValidation: true
+    ```
 
-   Git tree:
+    Git tree:
 
-   ```yaml
-   ---
-   apiVersion: vendir.k14s.io/v1alpha1
-   kind: Config
-   directories:
-     - path: vendor
-       contents:
-         - path: .
-           git:
-             url: https://github.com/<owner>/<repo>
-             ref: <upstream-tag>
-             skipInitSubmodules: true
-             includePaths:
-               - config/crd/bases/*.yaml
-   ```
+    ```yaml
+    ---
+    apiVersion: vendir.k14s.io/v1alpha1
+    kind: Config
+    directories:
+        - path: vendor
+          contents:
+              - path: .
+                git:
+                    url: https://github.com/<owner>/<repo>
+                    ref: <upstream-tag>
+                    skipInitSubmodules: true
+                    includePaths:
+                        - config/crd/bases/*.yaml
+    ```
 
 4. **Test locally.**
 
-   ```sh
-   mise install
-   mise run all
-   ```
+    ```sh
+    mise install
+    mise run all
+    ```
 
-   This builds every source and renders the merged site at `./out/site/`.
-   Open `out/site/index.html` to spot-check your new entry shows up under
-   the right API group. Per-source intermediate YAMLs land in `out/crds/`
-   if you need to inspect them.
+    This builds every source and renders the merged site at `./out/site/`.
+    Open `out/site/index.html` to spot-check your new entry shows up under
+    the right API group. Per-source intermediate YAMLs land in `out/crds/`
+    if you need to inspect them.
 
 5. **Open a pull request.** The PR workflow builds only the sources you
    touched. On merge to `main`, the release workflow rebuilds everything,
