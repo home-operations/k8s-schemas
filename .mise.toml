@@ -15,7 +15,7 @@ lefthook = "2.1.9"
 oxfmt = "0.52.0"
 sd = "1.1.0"
 "aqua:sholdee/crd-schema-publisher" = "2026.519.317"
-vendir = "0.45.3"
+vendir = "0.45.4"
 yq = "4.53.2"
 zizmor = "1.25.2"
 

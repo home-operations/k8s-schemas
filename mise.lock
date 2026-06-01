@@ -305,36 +305,36 @@ checksum = "sha256:59837c2e7c911099aca1cc46b663bcdc5a949fd3e9fbbaf34fc73e5d5d710
 url = "https://github.com/chmln/sd/releases/download/v1.1.0/sd-v1.1.0-x86_64-pc-windows-msvc.zip"
 
 [[tools.vendir]]
-version = "0.45.3"
+version = "0.45.4"
 backend = "aqua:carvel-dev/vendir"
 
 [tools.vendir."platforms.linux-arm64"]
-checksum = "sha256:cb951dedcf2e64d8d76cb9c205d13ce78f6a8802a74caa1205ec47bc9f2dac65"
-url = "https://github.com/carvel-dev/vendir/releases/download/v0.45.3/vendir-linux-arm64"
+checksum = "sha256:25847a9d58c44cca6f486d7c31199a2a2e15bc1be1e8adafae66a01411ea222e"
+url = "https://github.com/carvel-dev/vendir/releases/download/v0.45.4/vendir-linux-arm64"
 
 [tools.vendir."platforms.linux-arm64-musl"]
-checksum = "sha256:cb951dedcf2e64d8d76cb9c205d13ce78f6a8802a74caa1205ec47bc9f2dac65"
-url = "https://github.com/carvel-dev/vendir/releases/download/v0.45.3/vendir-linux-arm64"
+checksum = "sha256:25847a9d58c44cca6f486d7c31199a2a2e15bc1be1e8adafae66a01411ea222e"
+url = "https://github.com/carvel-dev/vendir/releases/download/v0.45.4/vendir-linux-arm64"
 
 [tools.vendir."platforms.linux-x64"]
-checksum = "sha256:7dc6dd9706170b442a7aaf3b4e29da57cca722a3252ed8f6ac9c2997e93a0aa5"
-url = "https://github.com/carvel-dev/vendir/releases/download/v0.45.3/vendir-linux-amd64"
+checksum = "sha256:b71189f46b26facc6d5baeae8047fe49afd899f8125818275241a084aa2c08a1"
+url = "https://github.com/carvel-dev/vendir/releases/download/v0.45.4/vendir-linux-amd64"
 
 [tools.vendir."platforms.linux-x64-musl"]
-checksum = "sha256:7dc6dd9706170b442a7aaf3b4e29da57cca722a3252ed8f6ac9c2997e93a0aa5"
-url = "https://github.com/carvel-dev/vendir/releases/download/v0.45.3/vendir-linux-amd64"
+checksum = "sha256:b71189f46b26facc6d5baeae8047fe49afd899f8125818275241a084aa2c08a1"
+url = "https://github.com/carvel-dev/vendir/releases/download/v0.45.4/vendir-linux-amd64"
 
 [tools.vendir."platforms.macos-arm64"]
-checksum = "sha256:4c27422b42a83ed598e5548542c0cd19d185002f6d4ae8e12d59df27ebcdf572"
-url = "https://github.com/carvel-dev/vendir/releases/download/v0.45.3/vendir-darwin-arm64"
+checksum = "sha256:e0e3c327888c5ed6bec69a8cfc8a8fd978e2790078b42ee48d3015be5e499899"
+url = "https://github.com/carvel-dev/vendir/releases/download/v0.45.4/vendir-darwin-arm64"
 
 [tools.vendir."platforms.macos-x64"]
-checksum = "sha256:52a584cf8c9c97b0f9693f33e404b971f3f65bff3a136d979d7b92c8a8f5cf62"
-url = "https://github.com/carvel-dev/vendir/releases/download/v0.45.3/vendir-darwin-amd64"
+checksum = "sha256:39042d2ce50e2277ce262596943ebaba4a94302bb1763bde75255029018d731e"
+url = "https://github.com/carvel-dev/vendir/releases/download/v0.45.4/vendir-darwin-amd64"
 
 [tools.vendir."platforms.windows-x64"]
-checksum = "sha256:5d73e1c1eccf245585887c99ebe004712adfaa5db66b212066df37b572475fca"
-url = "https://github.com/carvel-dev/vendir/releases/download/v0.45.3/vendir-windows-amd64.exe"
+checksum = "sha256:a052830535a86bf4654c2f891f22573f8ad525df65b08de8d190f32b52bdadd7"
+url = "https://github.com/carvel-dev/vendir/releases/download/v0.45.4/vendir-windows-amd64.exe"
 
 [[tools.yq]]
 version = "4.53.2"
