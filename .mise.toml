@@ -23,6 +23,10 @@ zizmor = "1.25.2"
 description = "Extract CRDs from one source (usage: mise run build <source-dir> <output-file>)"
 run = "./scripts/build.sh"
 
+[tasks.swagger]
+description = "Dump the pinned cluster's OpenAPI spec for native-type schemas"
+run = 'scripts/builtins-extract.sh native "$OUT_DIR/swagger.json"'
+
 [tasks.all]
 description = "Build every source and render the site locally"
 run = """
@@ -33,7 +37,8 @@ for dir in sources/*/*/; do
   name=$(basename "$(dirname "$dir")")_$(basename "$dir")
   ./scripts/build.sh "$dir" "$OUT_DIR/crds/$name.yaml"
 done
-crd-schema-publisher convert -d "$OUT_DIR/crds" -o "$OUT_DIR/site" --render
+scripts/builtins-extract.sh native "$OUT_DIR/swagger.json"
+crd-schema-publisher convert -d "$OUT_DIR/crds" --openapi "$OUT_DIR/swagger.json" -o "$OUT_DIR/site" --render
 """
 
 [tasks.clean]
