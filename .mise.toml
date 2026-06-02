@@ -14,6 +14,7 @@ kubectl = "1.36.1"
 lefthook = "2.1.9"
 oxfmt = "0.53.0"
 sd = "1.1.0"
+shellcheck = "0.11.0"
 "aqua:sholdee/crd-schema-publisher" = "2026.519.317"
 vendir = "0.45.4"
 yq = "4.53.2"
@@ -22,6 +23,10 @@ zizmor = "1.25.2"
 [tasks.build]
 description = "Extract CRDs from one source (usage: mise run build <source-dir> <output-file>)"
 run = "./scripts/build.sh"
+
+[tasks.native]
+description = "Generate native Kubernetes type schemas into an existing rendered site"
+run = 'python3 scripts/native-schemas.py native "$OUT_DIR/site"'
 
 [tasks.all]
 description = "Build every source and render the site locally"
@@ -34,6 +39,7 @@ for dir in sources/*/*/; do
   ./scripts/build.sh "$dir" "$OUT_DIR/crds/$name.yaml"
 done
 crd-schema-publisher convert -d "$OUT_DIR/crds" -o "$OUT_DIR/site" --render
+python3 scripts/native-schemas.py native "$OUT_DIR/site"
 """
 
 [tasks.clean]

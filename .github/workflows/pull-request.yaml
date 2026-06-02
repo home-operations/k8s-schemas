@@ -17,6 +17,7 @@ jobs:
       contents: read
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
+      native: ${{ steps.native-files.outputs.changed_files != '[]' }}
     steps:
       - name: Get changed files
         id: changed-files
@@ -24,6 +25,14 @@ jobs:
         with:
           patterns: |
             sources/**
+
+      - name: Get changed native files
+        id: native-files
+        uses: bjw-s-labs/action-changed-files@a9a36fb08ce06db9b02fbd8026cc2c0945eb9841 # v0.6.0
+        with:
+          patterns: |
+            native/**
+            scripts/native-schemas.py
 
       - name: Build matrix
         id: matrix
@@ -83,10 +92,40 @@ jobs:
           VENDOR_CACHE: ${{ github.workspace }}/out/vendor/${{ matrix.source.artifact }}
         run: mise run build "${{ matrix.source.dir }}" "${{ matrix.source.out }}"
 
+  native:
+    if: ${{ needs.changed.outputs.native == 'true' }}
+    needs:
+      - changed
+    name: Build native schemas
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Setup Mise
+        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+        with:
+          experimental: true
+          install_args: --locked
+
+      - name: Restore native vendor cache
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: native/vendor
+          key: native-${{ runner.os }}-${{ hashFiles('native/vendir.yml') }}
+
+      - name: Generate native Kubernetes schemas
+        run: mise run native
+
   status:
     if: ${{ !cancelled() }}
     needs:
       - build
+      - native
     name: Build Success
     runs-on: ubuntu-latest
     permissions: {}

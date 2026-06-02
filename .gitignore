@@ -3,3 +3,5 @@
 out/
 sources/**/vendir.lock.yml
 sources/**/vendor/
+native/vendir.lock.yml
+native/vendor/

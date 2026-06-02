@@ -47,6 +47,24 @@ The [Red Hat YAML extension](https://marketplace.visualstudio.com/items?itemName
 for VS Code and most other YAML language-server integrations honor this
 comment.
 
+### Native Kubernetes types
+
+Schemas for the built-in API types (Pod, Deployment, Service, …) are derived
+from the upstream Kubernetes OpenAPI spec and published under a `k8s/<minor>/`
+prefix, grouped by API group the same way as CRDs:
+
+```yaml
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/k8s/v1.36/apps/deployment_v1.json
+apiVersion: apps/v1
+kind: Deployment
+# ...
+```
+
+Core-group kinds live under `k8s/<minor>/core/` (e.g. `core/pod_v1.json`). The
+version is pinned in `native/vendir.yml` and bumped by Renovate; the minor in
+the URL stays stable across patch releases. These schemas are served alongside
+the site but, unlike CRDs, don't appear in its search index.
+
 ## Contributing
 
 To add a new upstream CRD source:

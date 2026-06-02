@@ -1,0 +1,14 @@
+---
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor
+    contents:
+      - path: .
+        git:
+          url: https://github.com/kubernetes/kubernetes
+          ref: v1.36.1
+          depth: 1
+          skipInitSubmodules: true
+        includePaths:
+          - api/openapi-spec/swagger.json
