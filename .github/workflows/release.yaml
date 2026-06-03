@@ -137,12 +137,12 @@ jobs:
 
       # Built-in types come from a throwaway kind cluster's OpenAPI spec; the
       # publisher's --openapi mode renders them into the same site and search
-      # index as the CRDs.
+      # index as the CRDs. --kustomize adds the Kustomization schema.
       - name: Dump built-in OpenAPI spec
         run: mise run swagger
 
       - name: Render merged site
-        run: crd-schema-publisher convert -d out/crds --openapi out/swagger.json -o out/site --render
+        run: crd-schema-publisher convert -d out/crds --openapi out/swagger.json --kustomize -o out/site --render
 
       - name: Configure Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0

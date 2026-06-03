@@ -64,6 +64,20 @@ kind: Deployment
 Core-group kinds live under `core/` (e.g. `core/pod_v1.json`). The k8s version
 follows kind's default node image, set by the `kind` tool version (bumped by Renovate).
 
+### Kustomize
+
+`crd-schema-publisher`'s `--kustomize` mode publishes a schema for kustomize's
+client-side `Kustomization` type, reflected from the `sigs.k8s.io/kustomize/api`
+Go types in the binary (no CRD, no cluster). The schema follows the pinned
+`crd-schema-publisher` version, bumped by Renovate.
+
+```yaml
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.config.k8s.io/kustomization_v1beta1.json
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# ...
+```
+
 ## Contributing
 
 To add a new upstream CRD source:

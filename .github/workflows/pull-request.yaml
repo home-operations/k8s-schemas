@@ -115,7 +115,7 @@ jobs:
       - name: Build native schemas
         run: |
           mise run swagger
-          crd-schema-publisher convert --openapi out/swagger.json -o out/site
+          crd-schema-publisher convert --openapi out/swagger.json --kustomize -o out/site
 
   status:
     if: ${{ !cancelled() }}
