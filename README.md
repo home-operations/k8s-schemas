@@ -47,6 +47,37 @@ The [Red Hat YAML extension](https://marketplace.visualstudio.com/items?itemName
 for VS Code and most other YAML language-server integrations honor this
 comment.
 
+### Native Kubernetes types
+
+Schemas for the built-in API types (Pod, Deployment, Service, …) come from a
+throwaway [kind](https://kind.sigs.k8s.io/) cluster's OpenAPI spec, which
+`crd-schema-publisher`'s `--openapi` mode renders into the same site, naming, and
+search index as the CRDs — so they're indistinguishable from any other kind:
+
+```yaml
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/apps/deployment_v1.json
+apiVersion: apps/v1
+kind: Deployment
+# ...
+```
+
+Core-group kinds live under `core/` (e.g. `core/pod_v1.json`). The k8s version
+follows kind's default node image, set by the `kind` tool version (bumped by Renovate).
+
+### Kustomize
+
+`crd-schema-publisher`'s `--kustomize` mode publishes a schema for kustomize's
+client-side `Kustomization` type, reflected from the `sigs.k8s.io/kustomize/api`
+Go types in the binary (no CRD, no cluster). The schema follows the pinned
+`crd-schema-publisher` version, bumped by Renovate.
+
+```yaml
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/kustomize.config.k8s.io/kustomization_v1beta1.json
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# ...
+```
+
 ## Contributing
 
 To add a new upstream CRD source:
