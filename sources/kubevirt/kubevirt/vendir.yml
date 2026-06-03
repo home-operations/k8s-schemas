@@ -10,7 +10,7 @@ directories:
       - path: .
         githubRelease:
           slug: kubevirt/kubevirt
-          tag: v1.8.2
+          tag: v1.8.3
           assetNames:
             - kubevirt-operator.yaml
           disableAutoChecksumValidation: true
@@ -19,7 +19,7 @@ directories:
       - path: .
         githubRelease:
           slug: kubevirt/kubevirt
-          tag: v1.8.2
+          tag: v1.8.3
           assetNames:
             - kubevirt-cr.yaml
           disableAutoChecksumValidation: true
