@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/l7mp/stunner
-          ref: v1.2.0
+          ref: v1.2.1
           skipInitSubmodules: true
         includePaths:
           - deploy/manifests/static/stunner-crd.yaml
