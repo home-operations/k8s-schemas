@@ -24,7 +24,7 @@ permissions:
 jobs:
   prepare:
     name: Discover sources
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     outputs:
@@ -59,7 +59,7 @@ jobs:
     needs:
       - prepare
     name: Build ${{ matrix.source.name }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     strategy:
@@ -107,7 +107,7 @@ jobs:
     needs:
       - build
     name: Deploy
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       pages: write
@@ -181,7 +181,7 @@ jobs:
       - build
       - deploy
     name: Release Success
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions: {}
     steps:
       - name: Any jobs failed?
