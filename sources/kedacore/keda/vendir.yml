@@ -7,7 +7,7 @@ directories:
       - path: .
         githubRelease:
           slug: kedacore/keda
-          tag: v2.20.0
+          tag: v2.20.1
           assetNames:
             - keda-*-crds.yaml
           disableAutoChecksumValidation: true
