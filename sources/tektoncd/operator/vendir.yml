@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/tektoncd/operator
-          ref: v0.79.1
+          ref: v0.80.0
           skipInitSubmodules: true
         includePaths:
           - config/base/300-operator_v1alpha1_*_crd.yaml
