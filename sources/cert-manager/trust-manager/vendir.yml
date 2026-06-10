@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/cert-manager/trust-manager
-          ref: v0.22.1
+          ref: v0.23.0
           skipInitSubmodules: true
         includePaths:
           - deploy/crds/*.yaml
