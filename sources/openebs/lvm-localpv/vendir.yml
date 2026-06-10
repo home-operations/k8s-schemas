@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/openebs/lvm-localpv
-          ref: v1.9.0
+          ref: v1.9.1
           skipInitSubmodules: true
         includePaths:
           - deploy/yamls/*-crd.yaml
