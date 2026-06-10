@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/openebs/zfs-localpv
-          ref: v2.10.0
+          ref: v2.10.1
           skipInitSubmodules: true
         includePaths:
           - deploy/yamls/*-crd.yaml
