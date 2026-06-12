@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/dragonflydb/dragonfly-operator
-          ref: v1.6.0
+          ref: v1.6.1
           skipInitSubmodules: true
         includePaths:
           - manifests/crd.yaml
