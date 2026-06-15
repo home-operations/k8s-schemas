@@ -7,7 +7,7 @@ directories:
       - path: .
         githubRelease:
           slug: VictoriaMetrics/operator
-          tag: v0.71.0
+          tag: v0.72.0
           assetNames:
             - crd.yaml
           disableAutoChecksumValidation: true
