@@ -7,7 +7,7 @@ directories:
       - path: .
         githubRelease:
           slug: emqx/emqx-operator
-          tag: "2.3.1"
+          tag: "2.3.2"
           assetNames:
             - install.yaml
           disableAutoChecksumValidation: true
