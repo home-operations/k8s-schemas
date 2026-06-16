@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/mogenius/renovate-operator
-          ref: "4.11.0"
+          ref: "4.12.1"
           skipInitSubmodules: true
         includePaths:
           - charts/renovate-operator/crd/*.yaml
