@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/cert-manager/approver-policy
-          ref: v0.25.1
+          ref: v0.26.0
           skipInitSubmodules: true
         includePaths:
           - deploy/crds/*.yaml
