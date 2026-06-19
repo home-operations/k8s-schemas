@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/gravitational/teleport
-          ref: v18.9.0
+          ref: v18.9.1
           # teleport.e is a private enterprise submodule we can't (and don't
           # need to) clone for CRD extraction.
           skipInitSubmodules: true
