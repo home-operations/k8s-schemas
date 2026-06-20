@@ -1,0 +1,13 @@
+---
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor
+    contents:
+      - path: .
+        githubRelease:
+          slug: rajsinghtech/garage-operator
+          tag: v0.6.17
+          assetNames:
+            - install.yaml
+          disableAutoChecksumValidation: true
