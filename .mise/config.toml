@@ -8,7 +8,7 @@ OUT_DIR = "{{config_root}}/out"
 [tools]
 cosign = "3.1.1"
 flux2 = "2.8.8"
-jq = "1.8.1"
+jq = "1.8.2"
 kind = "0.32.0"
 kubectl = "1.36.2"
 lefthook = "2.1.9"
