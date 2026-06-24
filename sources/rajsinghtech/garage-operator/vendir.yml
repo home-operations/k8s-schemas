@@ -7,7 +7,7 @@ directories:
       - path: .
         githubRelease:
           slug: rajsinghtech/garage-operator
-          tag: v0.6.17
+          tag: v0.6.18
           assetNames:
             - install.yaml
           disableAutoChecksumValidation: true
