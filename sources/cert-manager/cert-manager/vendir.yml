@@ -7,7 +7,7 @@ directories:
       - path: .
         githubRelease:
           slug: cert-manager/cert-manager
-          tag: v1.20.2
+          tag: v1.20.3
           assetNames:
             - cert-manager.crds.yaml
           disableAutoChecksumValidation: true
