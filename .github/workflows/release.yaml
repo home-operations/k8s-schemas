@@ -37,9 +37,6 @@ jobs:
 
       - name: Build matrix
         id: matrix
-        # Enumerate sources/<owner>/<repo>/ and pre-compute everything a build
-        # step needs so the matrix step itself is trivial. Same shape as the
-        # discover step in pull-request.yaml.
         run: |
           matrix=$(find sources -mindepth 2 -maxdepth 2 -type d | sort \
             | jq -R -s -c '
@@ -79,10 +76,6 @@ jobs:
           experimental: true
           install_args: --locked
 
-      # Cache vendir's output AND (for kind sources) the extracted CRD YAML
-      # so re-runs short-circuit. Key includes vendir.yml, kind.yaml (if
-      # present), and the build scripts — any change to script logic forces
-      # a clean rebuild instead of reusing a stale output.yaml.
       - name: Restore vendor cache
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -135,9 +128,6 @@ jobs:
           pattern: crds-*
           merge-multiple: true
 
-      # Built-in types come from a throwaway kind cluster's OpenAPI spec; the
-      # publisher's --openapi mode renders them into the same site and search
-      # index as the CRDs. --kustomize adds the Kustomization schema.
       - name: Dump built-in OpenAPI spec
         run: mise run swagger
 
