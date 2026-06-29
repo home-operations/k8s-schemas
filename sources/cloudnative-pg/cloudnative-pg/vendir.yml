@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/cloudnative-pg/cloudnative-pg
-          ref: v1.29.1
+          ref: v1.30.0
           skipInitSubmodules: true
         includePaths:
           - config/crd/bases/*.yaml
