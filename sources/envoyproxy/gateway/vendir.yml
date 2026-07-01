@@ -7,7 +7,7 @@ directories:
       - path: .
         githubRelease:
           slug: envoyproxy/gateway
-          tag: v1.8.1
+          tag: v1.8.2
           assetNames:
             - envoy-gateway-crds.yaml
           disableAutoChecksumValidation: true
