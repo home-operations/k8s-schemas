@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/defilantech/LLMKube
-          ref: v0.8.25
+          ref: v0.8.26
           skipInitSubmodules: true
         includePaths:
           - config/crd/bases/inference.llmkube.dev_*.yaml
