@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/home-operations/litellm-operator
-          ref: 0.0.4
+          ref: 0.0.5
           skipInitSubmodules: true
         includePaths:
           - config/crd/bases/*.yaml
