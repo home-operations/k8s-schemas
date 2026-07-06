@@ -8,7 +8,7 @@
       allowedVersions: "<2",
     },
     {
-      description: "Auto-merge CRD upstream bumps",
+      description: "Auto-merge CRD and external schema upstream bumps",
       matchManagers: ["vendir"],
       automerge: true,
       automergeType: "pr",

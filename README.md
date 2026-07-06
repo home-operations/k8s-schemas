@@ -78,6 +78,30 @@ kind: Kustomization
 # ...
 ```
 
+### External schemas
+
+A small, curated set of GitOps-adjacent tools publish ready-made JSON schemas
+in their own repositories. Those are mirrored verbatim at the pinned upstream
+version under `external/<owner>/<repo>/` — no conversion, just the upstream
+file served from this host:
+
+```yaml
+# yaml-language-server: $schema=https://k8s-schemas.home-operations.com/external/siderolabs/talos/config.schema.json
+version: v1alpha1
+machine:
+# ...
+```
+
+| Tool                 | Schema URL                                      |
+| -------------------- | ----------------------------------------------- |
+| Talos machine config | `external/siderolabs/talos/config.schema.json`  |
+| talhelper            | `external/budimanjojo/talhelper/talconfig.json` |
+
+Each source is a `vendir.yml` under `external/` in this repo, pinned and
+Renovate-bumped exactly like the CRD sources. Only tools that publish a
+maintained JSON schema at a tagged upstream path are in scope — schemas that
+would need generation or hand-maintenance here are not.
+
 ## Contributing
 
 To add a new upstream CRD source:

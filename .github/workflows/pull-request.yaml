@@ -18,6 +18,7 @@ jobs:
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
       native: ${{ steps.native-files.outputs.changed_files != '[]' }}
+      external: ${{ steps.external-files.outputs.changed_files != '[]' }}
     steps:
       - name: Get changed files
         id: changed-files
@@ -33,6 +34,14 @@ jobs:
           patterns: |
             native/**
             scripts/builtins-extract.sh
+
+      - name: Get changed external files
+        id: external-files
+        uses: bjw-s-labs/action-changed-files@a9a36fb08ce06db9b02fbd8026cc2c0945eb9841 # v0.6.0
+        with:
+          patterns: |
+            external/**
+            scripts/external.sh
 
       - name: Build matrix
         id: matrix
@@ -114,11 +123,37 @@ jobs:
           mise run swagger
           crd-schema-publisher convert --openapi out/swagger.json --kustomize -o out/site
 
+  external:
+    if: ${{ needs.changed.outputs.external == 'true' }}
+    needs:
+      - changed
+    name: Build external schemas
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Setup Mise
+        uses: jdx/mise-action@e6a8b3978addb5a52f2b4cd9d91eafa7f0ab959d # v4.2.0
+        with:
+          experimental: true
+          install_args: --locked
+
+      - name: Build external schemas
+        env:
+          VENDIR_GITHUB_API_TOKEN: ${{ github.token }}
+        run: mise run external
+
   status:
     if: ${{ !cancelled() }}
     needs:
       - build
       - native
+      - external
     name: Build Success
     runs-on: ubuntu-24.04
     permissions: {}
