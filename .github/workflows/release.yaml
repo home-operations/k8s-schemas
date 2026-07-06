@@ -8,6 +8,7 @@ on:
       - main
     paths:
       - sources/**
+      - external/**
       - native/**
       - scripts/**
       - .mise.toml
@@ -133,6 +134,11 @@ jobs:
 
       - name: Render merged site
         run: crd-schema-publisher convert -d out/crds --openapi out/swagger.json --kustomize -o out/site --render
+
+      - name: Fetch external schemas
+        env:
+          VENDIR_GITHUB_API_TOKEN: ${{ github.token }}
+        run: mise run external
 
       - name: Configure Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0

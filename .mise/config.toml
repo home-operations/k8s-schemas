@@ -27,6 +27,17 @@ run = "./scripts/build.sh"
 description = "Dump the pinned cluster's OpenAPI spec for native-type schemas"
 run = 'scripts/builtins-extract.sh native "$OUT_DIR/swagger.json"'
 
+[tasks.external]
+description = "Fetch external (non-CRD) JSON schemas into the site"
+run = """
+set -eu
+for dir in external/*/*/; do
+  owner=$(basename "$(dirname "$dir")")
+  repo=$(basename "$dir")
+  ./scripts/external.sh "$dir" "$OUT_DIR/site/external/$owner/$repo"
+done
+"""
+
 [tasks.all]
 description = "Build every source and render the site locally"
 run = """
@@ -39,6 +50,7 @@ for dir in sources/*/*/; do
 done
 scripts/builtins-extract.sh native "$OUT_DIR/swagger.json"
 crd-schema-publisher convert -d "$OUT_DIR/crds" --openapi "$OUT_DIR/swagger.json" --kustomize -o "$OUT_DIR/site" --render
+mise run external
 """
 
 [tasks.clean]
