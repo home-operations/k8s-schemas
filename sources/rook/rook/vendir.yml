@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/rook/rook
-          ref: v1.20.1
+          ref: v1.20.2
           skipInitSubmodules: true
         includePaths:
           - deploy/examples/crds.yaml
