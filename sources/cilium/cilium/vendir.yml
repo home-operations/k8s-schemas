@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/cilium/cilium
-          ref: v1.19.5
+          ref: v1.20
           skipInitSubmodules: true
         includePaths:
           - pkg/k8s/apis/cilium.io/client/crds/v2/*.yaml
