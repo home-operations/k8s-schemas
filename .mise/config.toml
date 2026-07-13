@@ -7,7 +7,7 @@ OUT_DIR = "{{config_root}}/out"
 
 [tools]
 cosign = "3.1.1"
-flux2 = "2.9.1"
+flux2 = "2.9.2"
 jq = "1.8.2"
 kind = "0.32.0"
 kubectl = "1.36.2"
