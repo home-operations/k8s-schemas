@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/home-operations/miroir
-          ref: 0.7.0
+          ref: 0.8.0
           skipInitSubmodules: true
         includePaths:
           - config/crd/bases/*.yaml
