@@ -7,7 +7,7 @@ directories:
       - path: .
         githubRelease:
           slug: aclerici38/pocket-id-operator
-          tag: v0.10.1
+          tag: v0.11.0
           assetNames:
             - install.yaml
           disableAutoChecksumValidation: true
