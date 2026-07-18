@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/external-secrets/external-secrets
-          ref: v2.7.0
+          ref: v2.8.0
           skipInitSubmodules: true
         includePaths:
           - config/crds/bases/*.yaml
