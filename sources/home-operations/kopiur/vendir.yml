@@ -6,7 +6,7 @@ directories:
       - path: .
         git:
           url: https://github.com/home-operations/kopiur
-          ref: 0.7.5
+          ref: 0.8.0
           skipInitSubmodules: true
         includePaths:
           - deploy/crds/*.yaml
