@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/siderolabs/talos
-          ref: v1.13.6
+          ref: v1.13.7
           skipInitSubmodules: true
         includePaths:
           - pkg/machinery/config/schemas/config.schema.json
