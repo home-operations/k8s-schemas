@@ -7,7 +7,7 @@ directories:
       - path: .
         githubRelease:
           slug: rancher/system-upgrade-controller
-          tag: v0.19.2
+          tag: v0.20.1
           assetNames:
             - crd.yaml
           disableAutoChecksumValidation: true
