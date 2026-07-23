@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/budimanjojo/talhelper
-          ref: v3.1.14
+          ref: v3.1.15
           skipInitSubmodules: true
         includePaths:
           - pkg/config/schemas/talconfig.json
