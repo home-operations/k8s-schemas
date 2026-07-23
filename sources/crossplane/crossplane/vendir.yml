@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/crossplane/crossplane
-          ref: v2.3.3
+          ref: v2.3.4
           skipInitSubmodules: true
         includePaths:
           - cluster/crds/*.yaml
