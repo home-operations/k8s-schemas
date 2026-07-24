@@ -92,10 +92,11 @@ machine:
 # ...
 ```
 
-| Tool                 | Schema URL                                      |
-| -------------------- | ----------------------------------------------- |
-| Talos machine config | `external/siderolabs/talos/config.schema.json`  |
-| talhelper            | `external/budimanjojo/talhelper/talconfig.json` |
+| Tool                    | Schema URL                                                    |
+| ----------------------- | ------------------------------------------------------------- |
+| bjw-s-labs app-template | `external/bjw-s/app-template/helmrelease-helm-v2.schema.json` |
+| Talos machine config    | `external/siderolabs/talos/config.schema.json`                |
+| talhelper               | `external/budimanjojo/talhelper/talconfig.json`               |
 
 Each source is a `vendir.yml` under `external/` in this repo, pinned and
 Renovate-bumped exactly like the CRD sources. Only tools that publish a
