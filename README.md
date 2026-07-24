@@ -94,7 +94,7 @@ machine:
 
 | Tool                    | Schema URL                                                    |
 | ----------------------- | ------------------------------------------------------------- |
-| bwj-s-labs app-template | `external/bjw-s/app-template/helmrelease-helm-v2.schema.json` |
+| bjw-s-labs app-template | `external/bjw-s/app-template/helmrelease-helm-v2.schema.json` |
 | Talos machine config    | `external/siderolabs/talos/config.schema.json`                |
 | talhelper               | `external/budimanjojo/talhelper/talconfig.json`               |
 
