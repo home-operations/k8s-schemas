@@ -6,6 +6,7 @@ WORKSPACE = "{{config_root}}"
 OUT_DIR = "{{config_root}}/out"
 
 [tools]
+actionlint = "1.7.12"
 cosign = "3.1.2"
 flux2 = "2.9.3"
 jq = "1.8.2"
