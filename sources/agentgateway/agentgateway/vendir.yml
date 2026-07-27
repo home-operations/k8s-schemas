@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/agentgateway/agentgateway
-          ref: v1.3.1
+          ref: v1.4.0
           skipInitSubmodules: true
         includePaths:
           - controller/install/helm/agentgateway-crds/templates/*.yaml
