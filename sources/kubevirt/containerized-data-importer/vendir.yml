@@ -7,7 +7,7 @@ directories:
       - path: .
         githubRelease:
           slug: kubevirt/containerized-data-importer
-          tag: v1.65.0
+          tag: v1.66.0
           assetNames:
             - cdi-operator.yaml
           disableAutoChecksumValidation: true
@@ -16,7 +16,7 @@ directories:
       - path: .
         githubRelease:
           slug: kubevirt/containerized-data-importer
-          tag: v1.65.0
+          tag: v1.66.0
           assetNames:
             - cdi-cr.yaml
           disableAutoChecksumValidation: true
