@@ -10,4 +10,4 @@ directories:
           ref: v0.81.0
           skipInitSubmodules: true
         includePaths:
-          - config/base/300-operator_v1alpha1_*_crd.yaml
+          - config/base/generated-crds/*.yaml
