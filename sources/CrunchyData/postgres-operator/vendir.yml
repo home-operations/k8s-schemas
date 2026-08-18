@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/CrunchyData/postgres-operator
-          ref: v6.0.2
+          ref: v6.0.3
           skipInitSubmodules: true
         includePaths:
           - config/crd/bases/*.yaml
