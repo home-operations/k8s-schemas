@@ -7,7 +7,7 @@ directories:
       - path: .
         githubRelease:
           slug: kyverno/kyverno
-          tag: v1.18.2
+          tag: v1.19.0
           assetNames:
             - install.yaml
           disableAutoChecksumValidation: true
