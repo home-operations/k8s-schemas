@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/stacklok/toolhive
-          ref: v0.47.1
+          ref: v0.48.0
           skipInitSubmodules: true
         includePaths:
           - deploy/charts/operator-crds/files/crds/*.yaml
