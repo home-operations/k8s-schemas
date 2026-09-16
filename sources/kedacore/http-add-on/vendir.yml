@@ -7,7 +7,7 @@ directories:
       - path: .
         githubRelease:
           slug: kedacore/http-add-on
-          tag: v0.15.0
+          tag: v0.16.0
           assetNames:
             - keda-add-ons-http-*-crds.yaml
           disableAutoChecksumValidation: true
