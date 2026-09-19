@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/agabani/tor-operator
-          ref: v1.0.15
+          ref: v1.0.16
           skipInitSubmodules: true
         includePaths:
           - docs/custom_resource_definitions/*.yaml
