@@ -12,7 +12,7 @@ permissions:
 jobs:
   changed:
     name: Discover changed sources
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     outputs:
@@ -22,14 +22,14 @@ jobs:
     steps:
       - name: Get changed files
         id: changed-files
-        uses: bjw-s-labs/action-changed-files@a9a36fb08ce06db9b02fbd8026cc2c0945eb9841 # v0.6.0
+        uses: bjw-s-labs/action-changed-files@147be9638332cf68fd60714a610509d7a9360d60 # v0.7.0
         with:
           patterns: |
             sources/**
 
       - name: Get changed native files
         id: native-files
-        uses: bjw-s-labs/action-changed-files@a9a36fb08ce06db9b02fbd8026cc2c0945eb9841 # v0.6.0
+        uses: bjw-s-labs/action-changed-files@147be9638332cf68fd60714a610509d7a9360d60 # v0.7.0
         with:
           patterns: |
             native/**
@@ -37,7 +37,7 @@ jobs:
 
       - name: Get changed external files
         id: external-files
-        uses: bjw-s-labs/action-changed-files@a9a36fb08ce06db9b02fbd8026cc2c0945eb9841 # v0.6.0
+        uses: bjw-s-labs/action-changed-files@147be9638332cf68fd60714a610509d7a9360d60 # v0.7.0
         with:
           patterns: |
             external/**
@@ -66,7 +66,7 @@ jobs:
     needs:
       - changed
     name: Build ${{ matrix.source.name }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     strategy:
@@ -103,7 +103,7 @@ jobs:
     needs:
       - changed
     name: Build native schemas
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     steps:
@@ -128,7 +128,7 @@ jobs:
     needs:
       - changed
     name: Build external schemas
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     steps:
@@ -150,7 +150,7 @@ jobs:
 
   workflow-lint:
     name: Workflow Lint
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
     steps:
@@ -185,7 +185,7 @@ jobs:
       - native
       - workflow-lint
     name: Build Success
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions: {}
     steps:
       # cancelled counts as failed: !cancelled() above still runs this job when
