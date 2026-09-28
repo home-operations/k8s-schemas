@@ -17,36 +17,48 @@ jobs:
       contents: read
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
-      native: ${{ steps.native-files.outputs.changed_files != '[]' }}
-      external: ${{ steps.external-files.outputs.changed_files != '[]' }}
+      native: ${{ steps.native-files.outputs.all_changed_files != '[]' }}
+      external: ${{ steps.external-files.outputs.all_changed_files != '[]' }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
       - name: Get changed files
         id: changed-files
-        uses: bjw-s-labs/action-changed-files@147be9638332cf68fd60714a610509d7a9360d60 # v0.7.0
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96 # v47.0.6
         with:
-          patterns: |
+          escape_json: false
+          files: |
             sources/**
+          json: true
 
       - name: Get changed native files
         id: native-files
-        uses: bjw-s-labs/action-changed-files@147be9638332cf68fd60714a610509d7a9360d60 # v0.7.0
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96 # v47.0.6
         with:
-          patterns: |
+          escape_json: false
+          files: |
             native/**
             scripts/builtins-extract.sh
+          json: true
 
       - name: Get changed external files
         id: external-files
-        uses: bjw-s-labs/action-changed-files@147be9638332cf68fd60714a610509d7a9360d60 # v0.7.0
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96 # v47.0.6
         with:
-          patterns: |
+          escape_json: false
+          files: |
             external/**
             scripts/external.sh
+          json: true
 
       - name: Build matrix
         id: matrix
         env:
-          CHANGED_FILES: ${{ steps.changed-files.outputs.changed_files }}
+          CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           matrix=$(jq -c '
             [ .[]
