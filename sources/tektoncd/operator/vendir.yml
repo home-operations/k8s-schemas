@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/tektoncd/operator
-          ref: v0.81.1
+          ref: v0.81.2
           skipInitSubmodules: true
         includePaths:
           - config/base/generated-crds/*.yaml
