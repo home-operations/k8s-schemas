@@ -18,7 +18,7 @@ sd = "1.1.0"
 "aqua:sholdee/crd-schema-publisher" = "2026.1010.191442"
 vendir = "0.46.2"
 yq = "4.54.1"
-zizmor = "1.31.0"
+zizmor = "1.31.1"
 
 [tasks.build]
 description = "Extract CRDs from one source (usage: mise run build <source-dir> <output-file>)"
