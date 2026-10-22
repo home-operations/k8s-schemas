@@ -201,24 +201,24 @@ url = "https://github.com/chmln/sd/releases/download/v1.1.0/sd-v1.1.0-aarch64-ap
 url_api = "https://api.github.com/repos/chmln/sd/releases/assets/362325451"
 
 [[tools.vendir]]
-version = "0.46.2"
+version = "0.46.3"
 backend = "aqua:carvel-dev/vendir"
-specifiers = ["0.46.2"]
+specifiers = ["0.46.3"]
 
 [tools.vendir."platforms.linux-arm64"]
-checksum = "sha256:bb0574c3aff6a5ae99801ceb3d63893917f763908700883bc1fbbcfed2ab6c9b"
-url = "https://github.com/carvel-dev/vendir/releases/download/v0.46.2/vendir-linux-arm64"
-url_api = "https://api.github.com/repos/carvel-dev/vendir/releases/assets/550375853"
+checksum = "sha256:821a9da837a017270743597a2e9b796d2d256385ad85450d6c5d89f05dd5aac9"
+url = "https://github.com/carvel-dev/vendir/releases/download/v0.46.3/vendir-linux-arm64"
+url_api = "https://api.github.com/repos/carvel-dev/vendir/releases/assets/655447804"
 
 [tools.vendir."platforms.linux-x64"]
-checksum = "sha256:0b4bad28b765c4cbf0cc2234d0d420bcf2d352b58eb202e9c55263374f95bd71"
-url = "https://github.com/carvel-dev/vendir/releases/download/v0.46.2/vendir-linux-amd64"
-url_api = "https://api.github.com/repos/carvel-dev/vendir/releases/assets/550375901"
+checksum = "sha256:5af8823ecc67b3ce2359bb0b70e72a5dbd765135722ca0ff42c16bc4d7409847"
+url = "https://github.com/carvel-dev/vendir/releases/download/v0.46.3/vendir-linux-amd64"
+url_api = "https://api.github.com/repos/carvel-dev/vendir/releases/assets/655447795"
 
 [tools.vendir."platforms.macos-arm64"]
-checksum = "sha256:dd77c509214e3a7114d30de4b9a94ba09cdcb84230244589db10448d8c744662"
-url = "https://github.com/carvel-dev/vendir/releases/download/v0.46.2/vendir-darwin-arm64"
-url_api = "https://api.github.com/repos/carvel-dev/vendir/releases/assets/550375854"
+checksum = "sha256:52b3c224329c11f7189847fc9687a7e9f319626f893dd9a8bcc3704dbc89cc25"
+url = "https://github.com/carvel-dev/vendir/releases/download/v0.46.3/vendir-darwin-arm64"
+url_api = "https://api.github.com/repos/carvel-dev/vendir/releases/assets/655447796"
 
 [[tools.yq]]
 version = "4.54.1"
