@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/giantswarm/silence-operator
-          ref: v0.21.0
+          ref: v0.21.1
           skipInitSubmodules: true
         includePaths:
           - config/crd/bases/*.yaml
