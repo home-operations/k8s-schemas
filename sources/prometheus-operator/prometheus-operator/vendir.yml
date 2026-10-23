@@ -7,7 +7,7 @@ directories:
       - path: .
         githubRelease:
           slug: prometheus-operator/prometheus-operator
-          tag: v0.94.1
+          tag: v0.94.2
           assetNames:
             - bundle.yaml
           disableAutoChecksumValidation: true
