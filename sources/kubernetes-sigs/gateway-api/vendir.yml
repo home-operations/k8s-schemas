@@ -7,7 +7,7 @@ directories:
       - path: .
         githubRelease:
           slug: kubernetes-sigs/gateway-api
-          tag: v1.6.3
+          tag: v1.7.0
           assetNames:
             - experimental-install.yaml
           disableAutoChecksumValidation: true
