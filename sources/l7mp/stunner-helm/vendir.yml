@@ -6,8 +6,8 @@ directories:
     contents:
       - path: .
         git:
-          url: https://github.com/l7mp/stunner
-          ref: v1.2.1
+          url: https://github.com/l7mp/stunner-helm
+          ref: v2.0.0
           skipInitSubmodules: true
         includePaths:
-          - deploy/manifests/static/stunner-crd.yaml
+          - helm/stunner/crds/stunner-crds.yaml
