@@ -16,7 +16,7 @@ oxfmt = "0.75.0"
 sd = "1.1.0"
 "aqua:sholdee/crd-schema-publisher" = "2026.1104.230219"
 vendir = "0.46.3"
-yq = "4.54.2"
+yq = "4.54.3"
 zizmor = "1.32.0"
 
 [tasks.build]
