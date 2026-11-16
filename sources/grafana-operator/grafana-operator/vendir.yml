@@ -7,7 +7,7 @@ directories:
       - path: .
         githubRelease:
           slug: grafana-operator/grafana-operator
-          tag: v5.25.0
+          tag: v5.26.0
           assetNames:
             - crds.yaml
           disableAutoChecksumValidation: true
