@@ -7,7 +7,7 @@ directories:
       - path: .
         git:
           url: https://github.com/l7mp/stunner-helm
-          ref: v2.0.0
+          ref: v2.0.2
           skipInitSubmodules: true
         includePaths:
           - helm/stunner/crds/stunner-crds.yaml
