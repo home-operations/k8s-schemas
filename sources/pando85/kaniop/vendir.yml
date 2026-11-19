@@ -1,0 +1,14 @@
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor
+    contents:
+      # The repository gitignores its generated CRDs; only the published chart carries them.
+      - path: .
+        helmChart:
+          name: kaniop
+          version: 0.23.0
+          repository:
+            url: oci://ghcr.io/pando85/helm-charts
+        includePaths:
+          - crds/*.yaml
