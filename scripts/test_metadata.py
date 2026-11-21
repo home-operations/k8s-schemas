@@ -3,11 +3,9 @@
 Run from the repo root (mise run test):
     uv run --locked pytest scripts
 
-The site tests need crd-schema-publisher and kubeconform on PATH. The evidence
-test needs vendir and network access.
+The site tests need crd-schema-publisher and kubeconform on PATH.
 """
 
-import difflib
 import json
 import re
 import subprocess
@@ -23,7 +21,6 @@ from metadata import (
     RulesError,
     collect_evidence,
     compile_rules,
-    fetch_evidence,
     is_resource,
     load_rule_sets,
     patch,
@@ -106,17 +103,6 @@ def test_pattern_without_a_match_is_rejected(tmp_path: Path, vendor: str):
     (tmp_path / "a.md").write_text("Set `example.com/mode` to on.\n")
     with pytest.raises(ValueError, match="no line in .* matches: gone"):
         collect_evidence(["mode", "gone"], tmp_path / vendor)
-
-
-@pytest.mark.parametrize("name", RULE_SETS)
-def test_evidence_matches_the_pinned_upstream(name: str):
-    recorded = (RULES_DIR / name / "evidence.txt").read_text().splitlines()
-    fetched = fetch_evidence(RULES_DIR / name, RULE_SETS[name]).splitlines()
-    diff = "\n".join(difflib.unified_diff(recorded, fetched, "evidence.txt", "upstream", lineterm=""))
-    assert not diff, (
-        f"The upstream lines behind metadata/{name}/rules.yaml changed. "
-        f"Check the rules against the new lines, then run `mise run metadata-evidence`.\n{diff}"
-    )
 
 
 def test_value_schema():

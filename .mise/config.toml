@@ -76,7 +76,7 @@ uv run --quiet --locked --no-dev scripts/metadata.py --schema > metadata/schema.
 oxfmt metadata/schema.json > /dev/null
 """
 
-# A Renovate bump of metadata/*/vendir.yml fails the tests when these lines
+# A Renovate bump of metadata/*/vendir.yml fails test-evidence when these lines
 # change upstream. Check the rules against the new lines before regenerating.
 [tasks.metadata-evidence]
 description = "Regenerate metadata/*/evidence.txt from the pinned upstream files"
@@ -87,8 +87,13 @@ description = "Lint and test the metadata rules and their compiler"
 run = """
 set -eu
 uv run --quiet --locked ruff check scripts
-uv run --quiet --locked pytest scripts
+uv run --quiet --locked pytest scripts/test_metadata.py
 """
+
+# Apart from test, because it clones the pinned upstreams.
+[tasks.test-evidence]
+description = "Check metadata/*/evidence.txt against the pinned upstream files"
+run = "uv run --quiet --locked pytest scripts/test_evidence.py"
 
 [tasks.clean]
 description = "Remove build and site artifacts"

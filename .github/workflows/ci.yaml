@@ -19,6 +19,7 @@ jobs:
       matrix: ${{ steps.matrix.outputs.matrix }}
       native: ${{ steps.native-files.outputs.all_changed_files != '[]' }}
       external: ${{ steps.external-files.outputs.all_changed_files != '[]' }}
+      metadata: ${{ steps.metadata-files.outputs.all_changed_files != '[]' }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -53,6 +54,17 @@ jobs:
           files: |
             external/**
             scripts/external.sh
+          json: true
+
+      - name: Get changed metadata files
+        id: metadata-files
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96 # v47.0.6
+        with:
+          escape_json: false
+          files: |
+            metadata/**
+            scripts/metadata.py
+            scripts/test_evidence.py
           json: true
 
       - name: Build matrix
@@ -160,6 +172,29 @@ jobs:
           VENDIR_GITHUB_API_TOKEN: ${{ github.token }}
         run: mise run external
 
+  evidence:
+    if: ${{ needs.changed.outputs.metadata == 'true' }}
+    needs:
+      - changed
+    name: Check metadata evidence
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Mise
+        uses: jdx/mise-action@236a21c3b91f5db6d4e174b348674a0f0caac06d # v5.2.9
+        with:
+          experimental: true
+          install_args: --locked
+
+      - name: Check metadata evidence
+        run: mise run test-evidence
+
   test:
     name: Test
     runs-on: ubuntu-26.04
@@ -202,6 +237,7 @@ jobs:
     needs:
       - build
       - changed
+      - evidence
       - external
       - native
       - test

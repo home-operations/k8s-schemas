@@ -251,8 +251,8 @@ metadata/<project>/
 └── evidence.txt   # generated: the lines of those files that match a pattern
 ```
 
-Renovate bumps the pin in `vendir.yml` like any other source. The tests fetch
-the files at the new version and compare their evidence with `evidence.txt`.
+Renovate bumps the pin in `vendir.yml` like any other source. A CI job fetches
+the files at the new version and compares their evidence with `evidence.txt`.
 If the lines did not change, the bump merges on its own. If they changed, the
 bump fails, and someone must check the rules against the new lines.
 
@@ -293,10 +293,12 @@ To add a rule for an annotation or label key:
 
    ```sh
    mise run test
+   mise run test-evidence
    ```
 
-   The tests compile the rules into converted schemas and run `kubeconform`
-   against them. For each rule, they check that every listed value passes and
-   that other values fail.
+   `test` compiles the rules into converted schemas and runs `kubeconform`
+   against them. For each rule, it checks that every listed value passes and
+   that other values fail. `test-evidence` fetches the pinned upstream files
+   and compares them with `evidence.txt`.
 
 For a new project, copy `metadata/fluxcd/` and replace its contents.
