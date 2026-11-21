@@ -1,5 +1,8 @@
 .claude/
 .private/
+.venv/
+__pycache__/
+*.py[cod]
 out/
 sources/**/vendir.lock.yml
 sources/**/vendor/

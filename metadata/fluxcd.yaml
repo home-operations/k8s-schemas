@@ -1,0 +1,66 @@
+---
+# yaml-language-server: $schema=schema.json
+#
+# Flux reads these keys on the resources that it applies. It ignores a value
+# that it does not know, so a typo fails without an error.
+#
+# kustomize-controller: https://github.com/fluxcd/kustomize-controller/blob/main/docs/spec/v1/kustomizations.md
+# helm-controller: https://github.com/fluxcd/helm-controller/blob/main/docs/spec/v2/helmreleases.md
+rules:
+  - key: kustomize.toolkit.fluxcd.io/ssa
+    fields: [annotations, labels]
+    values: [Override, Merge, IfNotPresent, Ignore]
+    ignoreCase: true
+    description: >-
+      Flux apply policy for this resource. Override (default) reverts changes
+      made outside the source. Merge keeps fields that other tools add.
+      IfNotPresent applies the resource only when it does not exist. Ignore
+      skips the resource.
+
+  - key: kustomize.toolkit.fluxcd.io/force
+    fields: [annotations, labels]
+    values: [Enabled, Disabled]
+    ignoreCase: true
+    description: >-
+      Flux recreate policy for this resource. Enabled recreates the resource
+      when an immutable field changes. The default is Disabled.
+
+  - key: kustomize.toolkit.fluxcd.io/prune
+    fields: [annotations, labels]
+    values: [Enabled, Disabled]
+    ignoreCase: true
+    description: >-
+      Flux delete policy for this resource. Disabled keeps the resource when
+      Flux garbage collection would delete it. The default is Enabled.
+
+  - key: kustomize.toolkit.fluxcd.io/reconcile
+    fields: [annotations, labels]
+    values: [enabled, disabled]
+    ignoreCase: true
+    description: >-
+      Set to disabled to stop Flux from applying or pruning this resource. Set
+      to enabled, or remove the key, to resume.
+
+  - key: kustomize.toolkit.fluxcd.io/decrypt
+    fields: [annotations]
+    values: [Enabled, Disabled]
+    ignoreCase: true
+    description: >-
+      Flux decryption policy for this resource. Disabled leaves an encrypted
+      resource as it is. The default is Enabled.
+
+  # Flux compares this value with ==, so only the lower-case form works.
+  - key: kustomize.toolkit.fluxcd.io/substitute
+    fields: [annotations, labels]
+    values: [enabled, disabled]
+    description: >-
+      Set to disabled to exclude this resource from Flux post-build variable
+      substitution.
+
+  - key: helm.toolkit.fluxcd.io/driftDetection
+    fields: [annotations, labels]
+    values: [enabled, disabled]
+    ignoreCase: true
+    description: >-
+      Set to disabled to exclude this resource from HelmRelease drift
+      detection.

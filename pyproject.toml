@@ -1,0 +1,14 @@
+[project]
+name = "k8s-schemas"
+version = "0.0.0"
+requires-python = ">=3.14"
+dependencies = ["pydantic==2.14.4", "pyyaml==6.0.3"]
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.17.5"]
+
+[tool.pytest.ini_options]
+pythonpath = ["scripts"]
+
+[tool.uv]
+package = false

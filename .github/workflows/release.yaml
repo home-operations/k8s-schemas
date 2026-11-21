@@ -10,6 +10,7 @@ on:
       - sources/**
       - external/**
       - native/**
+      - metadata/**
       - scripts/**
       - .mise.toml
       - .github/workflows/release.yaml
@@ -133,7 +134,7 @@ jobs:
         run: mise run swagger
 
       - name: Render merged site
-        run: crd-schema-publisher convert -d out/crds --openapi out/swagger.json --kustomize -o out/site --render
+        run: mise run site
 
       - name: Fetch external schemas
         env:

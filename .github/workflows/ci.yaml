@@ -1,6 +1,6 @@
 ---
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
-name: Pull Request
+name: CI
 
 on:
   merge_group:
@@ -160,6 +160,26 @@ jobs:
           VENDIR_GITHUB_API_TOKEN: ${{ github.token }}
         run: mise run external
 
+  test:
+    name: Test
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Mise
+        uses: jdx/mise-action@236a21c3b91f5db6d4e174b348674a0f0caac06d # v5.2.9
+        with:
+          experimental: true
+          install_args: --locked
+
+      - name: Lint and test
+        run: mise run test
+
   zizmor:
     name: Zizmor
     runs-on: ubuntu-26.04
@@ -184,6 +204,7 @@ jobs:
       - changed
       - external
       - native
+      - test
       - zizmor
     name: Build Success
     runs-on: ubuntu-26.04

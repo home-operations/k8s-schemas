@@ -24,6 +24,10 @@ alongside the `vendir.yml`; the build spins up a throwaway
 [kind](https://kind.sigs.k8s.io/) cluster, lets the operator reconcile, and
 dumps the registered CRDs.
 
+A small set of [metadata rules](#annotation-and-label-values) is then compiled
+into every resource schema. A rule lists the values that a controller accepts
+for one annotation or label key.
+
 The site is published to GitHub Pages and the same payload is pushed as a
 OCI artifact, signed with cosign. Renovate watches every source file natively
 and opens a PR when an upstream cuts a release.
@@ -77,6 +81,24 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 # ...
 ```
+
+### Annotation and label values
+
+A controller ignores an annotation value that it does not know, and a plain
+schema accepts any string. A manifest with a wrong value passes every check and
+then does nothing. For the keys in [`metadata/`](metadata), every resource
+schema also lists the values that the controller accepts:
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrate
+  annotations:
+    kustomize.toolkit.fluxcd.io/force: "true" # rejected: Flux reads Enabled or Disabled
+```
+
+A rule only applies to its own key. All other annotations and labels pass.
 
 ### External schemas
 
@@ -216,3 +238,39 @@ manifest and the CR together since they share a release tag.
 See `sources/kubevirt/kubevirt/` for the canonical shape and
 `sources/controlplaneio-fluxcd/flux-operator/` for the inline-vendir trigger
 CR and `extract.yaml` override.
+
+### Metadata rules
+
+To add a rule for an annotation or label key:
+
+1. **Find the values in the controller source.** Read how the controller
+   compares the value, not only its documentation. List every value that it
+   documents, defaults included. A rule that is too strict fails valid
+   manifests for everyone who uses the site.
+
+2. **Add the rule to a file in `metadata/`**, one file per project:
+
+   ```yaml
+   rules:
+     - key: kustomize.toolkit.fluxcd.io/prune
+       fields: [annotations, labels]
+       values: [Enabled, Disabled]
+       ignoreCase: true
+       description: >-
+         Flux delete policy for this resource.
+   ```
+
+   `fields` lists where the controller reads the key. Set `ignoreCase` when
+   the controller compares the value without regard to case. Editors show the
+   `description` on hover. [`metadata/schema.json`](metadata/schema.json)
+   describes the format.
+
+3. **Test locally.**
+
+   ```sh
+   mise run test
+   ```
+
+   The tests compile the rules into converted schemas and run `kubeconform`
+   against them. For each rule, they check that every listed value passes and
+   that other values fail.
