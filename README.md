@@ -122,6 +122,9 @@ To add a new upstream CRD source:
      This is the cleanest path because we just grab a pre-rendered file.
    - `git` — upstream ships raw CRD YAMLs in their tree at a tag we can
      pin. We sparse-check-out only the listed paths.
+   - `helmChart`: upstream ships its CRDs only in the `crds/` directory of a
+     published chart, not as a release asset or in its tree. vendir runs
+     `helm pull`, so the chart is fetched, not rendered.
    - `kind` — upstream is an operator that registers its CRDs at runtime,
      not as static YAML. See [Operator-runtime sources](#operator-runtime-sources)
      below.
@@ -131,8 +134,9 @@ To add a new upstream CRD source:
    (values-dependent generation, not just inert `{{ }}` decoration).
 
 3. **Create `sources/<owner>/<repo>/vendir.yml`.** Folders are nested by
-   GitHub owner so two upstreams can never collide. Use one of these two
-   shapes (the body is identical except for the upstream block):
+   GitHub owner so two upstreams can never collide. For `githubRelease` and
+   `git`, use one of these two shapes (the body is identical except for the
+   upstream block). For `helmChart`, copy `sources/pando85/kaniop/vendir.yml`.
 
    GitHub release asset:
 
