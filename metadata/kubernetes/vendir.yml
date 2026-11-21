@@ -1,0 +1,16 @@
+---
+# The published copy of the pod security admission package, which reads the
+# keys in rules.yaml. Its v0.N tags follow Kubernetes v1.N.
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor/pod-security-admission
+    contents:
+      - path: .
+        git:
+          url: https://github.com/kubernetes/pod-security-admission
+          ref: v0.37.2
+          skipInitSubmodules: true
+        includePaths:
+          - api/constants.go
+          - api/helpers.go

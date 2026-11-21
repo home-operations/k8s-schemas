@@ -1,11 +1,17 @@
 ---
-# yaml-language-server: $schema=schema.json
+# yaml-language-server: $schema=../schema.json
 #
 # Flux reads these keys on the resources that it applies. It ignores a value
 # that it does not know, so a typo fails without an error.
-#
-# kustomize-controller: https://github.com/fluxcd/kustomize-controller/blob/main/docs/spec/v1/kustomizations.md
-# helm-controller: https://github.com/fluxcd/helm-controller/blob/main/docs/spec/v2/helmreleases.md
+evidence:
+  - toolkit\.fluxcd\.io/(ssa|force|prune|reconcile|decrypt|substitute|driftDetection)
+  - '"%s/(ssa|force|prune|reconcile|decrypt)"'
+  - \b(Enabled|Disabled|Merge|IfNotPresent|Ignore)Value\b
+  - \bDriftDetection(MetadataKey|DisabledValue)\b
+  - GroupVersion = schema\.GroupVersion
+  - \bIsDecryptionDisabled\b
+  - github\.com/fluxcd/pkg/ssa\s
+
 rules:
   - key: kustomize.toolkit.fluxcd.io/ssa
     fields: [annotations, labels]

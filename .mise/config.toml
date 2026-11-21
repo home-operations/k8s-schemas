@@ -66,7 +66,7 @@ crd-schema-publisher convert -d "$OUT_DIR/crds" --openapi "$OUT_DIR/swagger.json
 uv run --quiet --locked --no-dev scripts/metadata.py "$OUT_DIR/site"
 """
 
-# Editors resolve the $schema comment in metadata/*.yaml against this file; the
+# Editors resolve the $schema comment in metadata/*/rules.yaml against this file; the
 # tests fail when it drifts from the model.
 [tasks.metadata-schema]
 description = "Regenerate metadata/schema.json from the rule model"
@@ -75,6 +75,12 @@ set -eu
 uv run --quiet --locked --no-dev scripts/metadata.py --schema > metadata/schema.json
 oxfmt metadata/schema.json > /dev/null
 """
+
+# A Renovate bump of metadata/*/vendir.yml fails the tests when these lines
+# change upstream. Check the rules against the new lines before regenerating.
+[tasks.metadata-evidence]
+description = "Regenerate metadata/*/evidence.txt from the pinned upstream files"
+run = "uv run --quiet --locked --no-dev scripts/metadata.py --evidence"
 
 [tasks.test]
 description = "Lint and test the metadata rules and their compiler"

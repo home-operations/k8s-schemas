@@ -86,8 +86,8 @@ kind: Kustomization
 
 A controller ignores an annotation value that it does not know, and a plain
 schema accepts any string. A manifest with a wrong value passes every check and
-then does nothing. For the keys in [`metadata/`](metadata), every resource
-schema also lists the values that the controller accepts:
+then does nothing. For the keys in the rule sets under [`metadata/`](metadata),
+every resource schema also lists the values that the controller accepts:
 
 ```yaml
 apiVersion: batch/v1
@@ -241,6 +241,21 @@ CR and `extract.yaml` override.
 
 ### Metadata rules
 
+Each project has a rule set, a directory under `metadata/`:
+
+```sh
+metadata/<project>/
+├── rules.yaml     # the rules, and the patterns that select the evidence
+├── vendir.yml     # pins the upstream and fetches the files that show how
+│                  # the controller reads the keys
+└── evidence.txt   # generated: the lines of those files that match a pattern
+```
+
+Renovate bumps the pin in `vendir.yml` like any other source. The tests fetch
+the files at the new version and compare their evidence with `evidence.txt`.
+If the lines did not change, the bump merges on its own. If they changed, the
+bump fails, and someone must check the rules against the new lines.
+
 To add a rule for an annotation or label key:
 
 1. **Find the values in the controller source.** Read how the controller
@@ -248,7 +263,7 @@ To add a rule for an annotation or label key:
    documents, defaults included. A rule that is too strict fails valid
    manifests for everyone who uses the site.
 
-2. **Add the rule to a file in `metadata/`**, one file per project:
+2. **Add the rule to `metadata/<project>/rules.yaml`:**
 
    ```yaml
    rules:
@@ -265,7 +280,16 @@ To add a rule for an annotation or label key:
    `description` on hover. [`metadata/schema.json`](metadata/schema.json)
    describes the format.
 
-3. **Test locally.**
+3. **Record the evidence.** Add the files that you read to `includePaths` in
+   `vendir.yml`. Add a regular expression to `evidence` in `rules.yaml` for
+   the lines that name the key and its values. Then regenerate the snapshot
+   and read the result:
+
+   ```sh
+   mise run metadata-evidence
+   ```
+
+4. **Test locally.**
 
    ```sh
    mise run test
@@ -274,3 +298,5 @@ To add a rule for an annotation or label key:
    The tests compile the rules into converted schemas and run `kubeconform`
    against them. For each rule, they check that every listed value passes and
    that other values fail.
+
+For a new project, copy `metadata/fluxcd/` and replace its contents.

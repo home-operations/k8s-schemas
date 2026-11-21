@@ -1,0 +1,14 @@
+pod-security-admission/api/constants.go
+  LevelPrivileged Level = "privileged"
+  LevelBaseline Level = "baseline"
+  LevelRestricted Level = "restricted"
+  labelPrefix = "pod-security.kubernetes.io/"
+  EnforceLevelLabel = labelPrefix + "enforce"
+  AuditLevelLabel = labelPrefix + "audit"
+  WarnLevelLabel = labelPrefix + "warn"
+pod-security-admission/api/helpers.go
+  case LevelPrivileged, LevelBaseline, LevelRestricted:
+  case LevelPrivileged, LevelBaseline, LevelRestricted:
+  if level, ok := labels[EnforceLevelLabel]; ok {
+  if level, ok := labels[AuditLevelLabel]; ok {
+  if level, ok := labels[WarnLevelLabel]; ok {

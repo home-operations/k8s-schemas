@@ -1,24 +1,40 @@
 """Compile the metadata rules into the converted schemas.
 
-A rule in metadata/*.yaml lists the values that a controller accepts for one
-annotation or label key. Compiling adds the rules to every resource schema, so
-that validators and editors check those values. Run it after
-`crd-schema-publisher convert`.
+A rule in metadata/<project>/rules.yaml lists the values that a controller
+accepts for one annotation or label key. Compiling adds the rules to every
+resource schema, so that validators and editors check those values. Run it
+after `crd-schema-publisher convert`.
+
+Each rule set also pins the upstream that it describes. vendir.yml fetches the
+files that show how the controller reads the keys, and evidence.txt holds the
+lines of those files that matter. When Renovate moves the pin and those lines
+change, the tests fail until someone checks the rules again.
 
 Compile (mise run site): uv run --locked --no-dev scripts/metadata.py <site-dir>
 Schema export (mise run metadata-schema): uv run --locked --no-dev scripts/metadata.py --schema
+Evidence export (mise run metadata-evidence): uv run --locked --no-dev scripts/metadata.py --evidence
 
 Exits non-zero with one error per line on stderr when a rule file is invalid.
 """
 
 import json
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any, Literal, Self
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    ValidationError,
+    field_validator,
+    model_validator,
+)
 from pydantic.alias_generators import to_camel
 
 RULES_DIR = Path(__file__).parents[1] / "metadata"
@@ -82,33 +98,83 @@ class Rule(_Model):
         return schema | {"pattern": f"^({'|'.join(alternatives)})$"}
 
 
-class RuleFile(_Model):
-    """Value rules for well-known annotation and label keys."""
+class RuleSet(_Model):
+    """Value rules for the well-known annotation and label keys of one project."""
 
+    evidence: list[str] = Field(
+        min_length=1,
+        description="Regular expressions for the lines, in the files that vendir.yml fetches, "
+        "that show how the controller reads the keys.",
+    )
     rules: list[Rule] = Field(min_length=1)
+
+    @field_validator("evidence")
+    @classmethod
+    def _evidence_compiles(cls, patterns: list[str]) -> list[str]:
+        for pattern in patterns:
+            try:
+                re.compile(pattern)
+            except re.error as e:
+                raise ValueError(f"{pattern!r} is not a regular expression: {e}") from e
+        return patterns
 
 
 def rule_schema() -> Schema:
-    return RuleFile.model_json_schema()
+    return RuleSet.model_json_schema()
 
 
-def load_rules(rules_dir: Path) -> list[Rule]:
-    rules: list[Rule] = []
+def load_rule_sets(rules_dir: Path) -> dict[str, RuleSet]:
+    """Load every <project>/rules.yaml, keyed by project."""
+    rule_sets: dict[str, RuleSet] = {}
     owners: dict[tuple[str, str], str] = {}
-    for file in sorted(rules_dir.glob("*.yaml")):
+    for file in sorted(rules_dir.glob("*/rules.yaml")):
+        name = file.parent.name
         try:
-            parsed = RuleFile.model_validate(yaml.safe_load(file.read_text()))
+            rule_set = RuleSet.model_validate(yaml.safe_load(file.read_text()))
         except (yaml.YAMLError, ValidationError) as e:
-            raise RulesError(f"{file.name}: {e}") from e
-        for rule in parsed.rules:
+            raise RulesError(f"{name}: {e}") from e
+        for rule in rule_set.rules:
             for field in rule.fields:
                 if owner := owners.get((field, rule.key)):
-                    raise RulesError(f"{file.name}: {owner} already has a rule for {rule.key} in {field}")
-                owners[field, rule.key] = file.name
-        rules += parsed.rules
-    if not rules:
-        raise RulesError(f"no rule files in {rules_dir}")
-    return rules
+                    raise RulesError(f"{name}: {owner} already has a rule for {rule.key} in {field}")
+                owners[field, rule.key] = name
+        rule_sets[name] = rule_set
+    if not rule_sets:
+        raise RulesError(f"no rule sets in {rules_dir}")
+    return rule_sets
+
+
+def collect_evidence(patterns: list[str], vendor_dir: Path) -> str:
+    """List the lines that match a pattern, file by file.
+
+    Runs of white space become one space, so that a change of alignment in the
+    upstream file is not a change of evidence.
+    """
+    wanted = {pattern: re.compile(pattern) for pattern in patterns}
+    unmatched = set(patterns)
+    out: list[str] = []
+    for file in sorted(p for p in vendor_dir.rglob("*") if p.is_file()):
+        lines = []
+        for line in file.read_text().splitlines():
+            matched = {pattern for pattern, regex in wanted.items() if regex.search(line)}
+            if matched:
+                unmatched -= matched
+                lines.append(f"  {' '.join(line.split())}")
+        if lines:
+            out += [file.relative_to(vendor_dir).as_posix(), *lines]
+    # A pattern without a match checks nothing, and would hide that upstream
+    # moved or removed what it selected.
+    if unmatched:
+        raise ValueError(f"no line in {vendor_dir} matches: {', '.join(sorted(unmatched))}")
+    return "\n".join(out) + "\n"
+
+
+def fetch_evidence(rule_set_dir: Path, rule_set: RuleSet) -> str:
+    """Fetch the pinned upstream files and collect their evidence."""
+    with tempfile.TemporaryDirectory() as work:
+        shutil.copy(rule_set_dir / "vendir.yml", work)
+        subprocess.run(["vendir", "sync", "--chdir", work], check=True, stdout=subprocess.DEVNULL)
+        return collect_evidence(rule_set.evidence, Path(work) / "vendor")
 
 
 def compile_rules(rules: list[Rule]) -> Schema:
@@ -172,13 +238,18 @@ def main(argv: list[str]) -> int:
         print(json.dumps(rule_schema(), indent=2))
         return 0
     if len(argv) != 1:
-        print("usage: metadata.py <site-dir> | --schema", file=sys.stderr)
+        print("usage: metadata.py <site-dir> | --schema | --evidence", file=sys.stderr)
         return 2
     try:
-        rules = load_rules(RULES_DIR)
+        rule_sets = load_rule_sets(RULES_DIR)
     except RulesError as e:
         print(e, file=sys.stderr)
         return 1
+    if argv == ["--evidence"]:
+        for name, rule_set in rule_sets.items():
+            (RULES_DIR / name / "evidence.txt").write_text(fetch_evidence(RULES_DIR / name, rule_set))
+        return 0
+    rules = [rule for rule_set in rule_sets.values() for rule in rule_set.rules]
     patched = patch_site(Path(argv[0]), compile_rules(rules))
     print(f"compiled {len(rules)} metadata rules into {patched} schemas", file=sys.stderr)
     return 0

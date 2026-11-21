@@ -3,9 +3,11 @@
 Run from the repo root (mise run test):
     uv run --locked pytest scripts
 
-The site tests need crd-schema-publisher and kubeconform on PATH.
+The site tests need crd-schema-publisher and kubeconform on PATH. The evidence
+test needs vendir and network access.
 """
 
+import difflib
 import json
 import re
 import subprocess
@@ -19,23 +21,27 @@ from metadata import (
     RULES_DIR,
     Rule,
     RulesError,
+    collect_evidence,
     compile_rules,
+    fetch_evidence,
     is_resource,
-    load_rules,
+    load_rule_sets,
     patch,
     patch_site,
     rule_schema,
 )
 
 TESTDATA = Path(__file__).parent / "testdata"
-RULES = load_rules(RULES_DIR)
+RULE_SETS = load_rule_sets(RULES_DIR)
+RULES = [rule for rule_set in RULE_SETS.values() for rule in rule_set.rules]
 
 # One CRD kind and one built-in kind, as the converter writes them.
 KINDS = [("example.com/v1", "Widget"), ("scheduling.k8s.io/v1", "PriorityClass")]
 
 
-def write_rules(tmp_path: Path, name: str, *rules: dict) -> None:
-    (tmp_path / name).write_text(yaml.safe_dump({"rules": list(rules)}))
+def write_rule_set(tmp_path: Path, name: str, *rules: dict, evidence: tuple[str, ...] = ("mode",)) -> None:
+    (tmp_path / name).mkdir()
+    (tmp_path / name / "rules.yaml").write_text(yaml.safe_dump({"evidence": list(evidence), "rules": list(rules)}))
 
 
 def rule(**overrides: object) -> dict:
@@ -59,21 +65,58 @@ def test_schema_file_matches_the_model():
     ],
 )
 def test_invalid_rule_is_rejected(tmp_path: Path, override: dict, error: str):
-    write_rules(tmp_path, "bad.yaml", rule(**override))
-    with pytest.raises(RulesError, match=rf"bad\.yaml: (.|\n)*{error}"):
-        load_rules(tmp_path)
+    write_rule_set(tmp_path, "bad", rule(**override))
+    with pytest.raises(RulesError, match=rf"bad: (.|\n)*{error}"):
+        load_rule_sets(tmp_path)
+
+
+@pytest.mark.parametrize("evidence", [(), ("(",)])
+def test_invalid_evidence_is_rejected(tmp_path: Path, evidence: tuple[str, ...]):
+    write_rule_set(tmp_path, "bad", rule(), evidence=evidence)
+    with pytest.raises(RulesError, match=r"bad: (.|\n)*evidence"):
+        load_rule_sets(tmp_path)
 
 
 def test_second_rule_for_a_key_is_rejected(tmp_path: Path):
-    write_rules(tmp_path, "a.yaml", rule(fields=["annotations", "labels"]))
-    write_rules(tmp_path, "b.yaml", rule(fields=["labels"]))
-    with pytest.raises(RulesError, match=r"b\.yaml: a\.yaml already has a rule for example\.com/mode in labels"):
-        load_rules(tmp_path)
+    write_rule_set(tmp_path, "a", rule(fields=["annotations", "labels"]))
+    write_rule_set(tmp_path, "b", rule(fields=["labels"]))
+    with pytest.raises(RulesError, match=r"b: a already has a rule for example\.com/mode in labels"):
+        load_rule_sets(tmp_path)
 
 
-def test_directory_without_rules_is_rejected(tmp_path: Path):
-    with pytest.raises(RulesError, match="no rule files"):
-        load_rules(tmp_path)
+def test_directory_without_rule_sets_is_rejected(tmp_path: Path):
+    with pytest.raises(RulesError, match="no rule sets"):
+        load_rule_sets(tmp_path)
+
+
+def test_collect_evidence(tmp_path: Path):
+    (tmp_path / "b").mkdir()
+    (tmp_path / "b/types.go").write_text('const (\n\tMode    = "on"\n\tOther = 1\n)\n')
+    (tmp_path / "a.md").write_text("Set `example.com/mode` to on.\n")
+    (tmp_path / "unrelated.md").write_text("Nothing here.\n")
+    # Each pattern stands alone: a flag or a group in one does not reach the next.
+    patterns = ["(?i)MODE +=", r"(example)\.com/mode", r"(o)n\1?\."]
+    assert collect_evidence(patterns, tmp_path) == (
+        'a.md\n  Set `example.com/mode` to on.\nb/types.go\n  Mode = "on"\n'
+    )
+
+
+@pytest.mark.parametrize("vendor", ["", "missing"])
+def test_pattern_without_a_match_is_rejected(tmp_path: Path, vendor: str):
+    (tmp_path / "a.md").write_text("Set `example.com/mode` to on.\n")
+    with pytest.raises(ValueError, match="no line in .* matches: gone"):
+        collect_evidence(["mode", "gone"], tmp_path / vendor)
+
+
+@pytest.mark.parametrize("name", RULE_SETS)
+def test_evidence_matches_the_pinned_upstream(name: str):
+    recorded = (RULES_DIR / name / "evidence.txt").read_text().splitlines()
+    fetched = fetch_evidence(RULES_DIR / name, RULE_SETS[name]).splitlines()
+    diff = "\n".join(difflib.unified_diff(recorded, fetched, "evidence.txt", "upstream", lineterm=""))
+    assert not diff, (
+        f"The upstream lines behind metadata/{name}/rules.yaml changed. "
+        f"Check the rules against the new lines, then run `mise run metadata-evidence`.\n{diff}"
+    )
 
 
 def test_value_schema():

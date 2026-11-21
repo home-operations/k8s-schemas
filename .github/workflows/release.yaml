@@ -10,7 +10,7 @@ on:
       - sources/**
       - external/**
       - native/**
-      - metadata/**
+      - metadata/*/rules.yaml
       - scripts/**
       - .mise.toml
       - .github/workflows/release.yaml

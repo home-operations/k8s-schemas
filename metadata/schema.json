@@ -47,8 +47,17 @@
     }
   },
   "additionalProperties": false,
-  "description": "Value rules for well-known annotation and label keys.",
+  "description": "Value rules for the well-known annotation and label keys of one project.",
   "properties": {
+    "evidence": {
+      "description": "Regular expressions for the lines, in the files that vendir.yml fetches, that show how the controller reads the keys.",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Evidence",
+      "type": "array"
+    },
     "rules": {
       "items": {
         "$ref": "#/$defs/Rule"
@@ -58,7 +67,7 @@
       "type": "array"
     }
   },
-  "required": ["rules"],
-  "title": "RuleFile",
+  "required": ["evidence", "rules"],
+  "title": "RuleSet",
   "type": "object"
 }

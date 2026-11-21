@@ -1,0 +1,33 @@
+---
+# yaml-language-server: $schema=../schema.json
+#
+# Pod security admission reads these labels on a Namespace. It compares a level
+# with exact case.
+evidence:
+  - \bLevel(Privileged|Baseline|Restricted)\s+Level =
+  - case LevelPrivileged, LevelBaseline, LevelRestricted
+  - \blabelPrefix =
+  - \b(Enforce|Audit|Warn)LevelLabel\s+=
+  - labels\[(Enforce|Audit|Warn)LevelLabel\]
+
+rules:
+  - key: pod-security.kubernetes.io/enforce
+    fields: [labels]
+    values: [privileged, baseline, restricted]
+    description: >-
+      Pod security level that the namespace enforces. A pod that violates it
+      is rejected.
+
+  - key: pod-security.kubernetes.io/audit
+    fields: [labels]
+    values: [privileged, baseline, restricted]
+    description: >-
+      Pod security level that the namespace audits. A pod that violates it is
+      allowed, and the audit log records the violation.
+
+  - key: pod-security.kubernetes.io/warn
+    fields: [labels]
+    values: [privileged, baseline, restricted]
+    description: >-
+      Pod security level that the namespace warns about. A pod that violates
+      it is allowed, and the client gets a warning.
