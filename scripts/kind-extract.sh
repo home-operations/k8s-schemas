@@ -31,7 +31,7 @@ kind create cluster \
     --wait 120s >&2
 export KUBECONFIG="$WORK/kubeconfig"
 
-kubectl apply -f "$WORK/vendor/operator" >&2
+kubectl apply --server-side -f "$WORK/vendor/operator" >&2
 kubectl wait --for=condition=Established --all crd --timeout=120s >&2
 kubectl wait --for=condition=Available --all deployments --all-namespaces --timeout=120s >&2
 
