@@ -1,0 +1,48 @@
+{
+  "swagger": "2.0",
+  "info": { "title": "Kubernetes", "version": "v0.0.0" },
+  "paths": {},
+  "definitions": {
+    "io.k8s.api.scheduling.v1.PriorityClass": {
+      "type": "object",
+      "required": ["value"],
+      "properties": {
+        "apiVersion": { "type": "string" },
+        "kind": { "type": "string" },
+        "metadata": { "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta" },
+        "value": { "type": "integer", "format": "int32" }
+      },
+      "x-kubernetes-group-version-kind": [
+        { "group": "scheduling.k8s.io", "kind": "PriorityClass", "version": "v1" }
+      ]
+    },
+    "io.k8s.api.scheduling.v1.PriorityClassList": {
+      "type": "object",
+      "required": ["items"],
+      "properties": {
+        "apiVersion": { "type": "string" },
+        "kind": { "type": "string" },
+        "metadata": { "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ListMeta" },
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/io.k8s.api.scheduling.v1.PriorityClass" }
+        }
+      },
+      "x-kubernetes-group-version-kind": [
+        { "group": "scheduling.k8s.io", "kind": "PriorityClassList", "version": "v1" }
+      ]
+    },
+    "io.k8s.apimachinery.pkg.apis.meta.v1.ListMeta": {
+      "type": "object",
+      "properties": { "resourceVersion": { "type": "string" } }
+    },
+    "io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta": {
+      "type": "object",
+      "properties": {
+        "annotations": { "type": "object", "additionalProperties": { "type": "string" } },
+        "labels": { "type": "object", "additionalProperties": { "type": "string" } },
+        "name": { "type": "string" }
+      }
+    }
+  }
+}

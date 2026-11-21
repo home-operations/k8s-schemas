@@ -1,0 +1,73 @@
+{
+  "$defs": {
+    "Rule": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "description": "The annotation or label key, with its DNS prefix.",
+          "pattern": "^[a-z0-9]([a-z0-9.-]*[a-z0-9])?/[A-Za-z0-9]([A-Za-z0-9._-]*[A-Za-z0-9])?$",
+          "title": "Key",
+          "type": "string"
+        },
+        "fields": {
+          "description": "The metadata fields where the controller reads the key.",
+          "items": {
+            "enum": ["annotations", "labels"],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Fields",
+          "type": "array"
+        },
+        "values": {
+          "description": "Every value that the controller documents for the key, defaults included.",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Values",
+          "type": "array"
+        },
+        "ignoreCase": {
+          "default": false,
+          "description": "Set to true when the controller compares the value without regard to case.",
+          "title": "Ignorecase",
+          "type": "boolean"
+        },
+        "description": {
+          "description": "The text that editors show on hover.",
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": ["key", "fields", "values", "description"],
+      "title": "Rule",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Value rules for the well-known annotation and label keys of one project.",
+  "properties": {
+    "evidence": {
+      "description": "Regular expressions for the lines, in the files that vendir.yml fetches, that show how the controller reads the keys.",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Evidence",
+      "type": "array"
+    },
+    "rules": {
+      "items": {
+        "$ref": "#/$defs/Rule"
+      },
+      "minItems": 1,
+      "title": "Rules",
+      "type": "array"
+    }
+  },
+  "required": ["evidence", "rules"],
+  "title": "RuleSet",
+  "type": "object"
+}

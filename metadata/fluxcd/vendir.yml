@@ -1,0 +1,34 @@
+---
+# The files that show how Flux reads the keys in rules.yaml. The comparison of
+# most keys (AnyInMetadata) lives in the fluxcd/pkg/ssa module, so the version
+# of that module in go.mod is evidence too.
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+  - path: vendor/kustomize-controller
+    contents:
+      - path: .
+        git:
+          url: https://github.com/fluxcd/kustomize-controller
+          ref: v1.10.2
+          skipInitSubmodules: true
+        includePaths:
+          - api/v1/groupversion_info.go
+          - api/v1/kustomization_types.go
+          - docs/spec/v1/kustomizations.md
+          - go.mod
+          - internal/controller/kustomization_controller.go
+          - internal/decryptor/decryptor.go
+  - path: vendor/helm-controller
+    contents:
+      - path: .
+        git:
+          url: https://github.com/fluxcd/helm-controller
+          ref: v1.7.2
+          skipInitSubmodules: true
+        includePaths:
+          - api/v2/groupversion_info.go
+          - api/v2/helmrelease_types.go
+          - docs/spec/v2/helmreleases.md
+          - go.mod
+          - internal/action/diff.go

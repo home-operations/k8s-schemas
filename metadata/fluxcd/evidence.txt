@@ -1,0 +1,55 @@
+helm-controller/api/v2/groupversion_info.go
+  GroupVersion = schema.GroupVersion{Group: "helm.toolkit.fluxcd.io", Version: "v2"}
+helm-controller/api/v2/helmrelease_types.go
+  // DriftDetectionMetadataKey is the label or annotation key used to disable
+  DriftDetectionMetadataKey = GroupVersion.Group + "/driftDetection"
+  // DriftDetectionDisabledValue is the value used to disable the diffing of
+  // an object using DriftDetectionMetadataKey.
+  DriftDetectionDisabledValue = "disabled"
+  // +kubebuilder:metadata:annotations="kustomize.toolkit.fluxcd.io/substitute=disabled"
+helm-controller/docs/spec/v2/helmreleases.md
+  annotated with `helm.toolkit.fluxcd.io/driftDetection: disabled`. Using
+helm-controller/go.mod
+  github.com/fluxcd/pkg/ssa v0.83.0
+helm-controller/internal/action/diff.go
+  jsondiff.ExclusionSelector{v2.DriftDetectionMetadataKey: v2.DriftDetectionDisabledValue},
+kustomize-controller/api/v1/groupversion_info.go
+  GroupVersion = schema.GroupVersion{Group: "kustomize.toolkit.fluxcd.io", Version: "v1"}
+kustomize-controller/api/v1/kustomization_types.go
+  EnabledValue = "enabled"
+  DisabledValue = "disabled"
+  MergeValue = "Merge"
+  IfNotPresentValue = "IfNotPresent"
+  IgnoreValue = "Ignore"
+  // +kubebuilder:metadata:annotations="kustomize.toolkit.fluxcd.io/substitute=disabled"
+kustomize-controller/docs/spec/v1/kustomizations.md
+  kustomize.toolkit.fluxcd.io/prune: disabled
+  kustomize.toolkit.fluxcd.io/substitute: disabled
+  kustomize.toolkit.fluxcd.io/force: enabled
+  | `kustomize.toolkit.fluxcd.io/decrypt` | `Enabled` | - `Enabled`<br/>- `Disabled` | Decryption policy |
+  | `kustomize.toolkit.fluxcd.io/ssa` | `Override` | - `Override`<br/>- `Merge`<br/>- `IfNotPresent`<br/>- `Ignore` | Apply policy |
+  | `kustomize.toolkit.fluxcd.io/force` | `Disabled` | - `Enabled`<br/>- `Disabled` | Recreate policy |
+  | `kustomize.toolkit.fluxcd.io/prune` | `Enabled` | - `Enabled`<br/>- `Disabled` | Delete policy |
+  #### `kustomize.toolkit.fluxcd.io/ssa`
+  #### `kustomize.toolkit.fluxcd.io/force`
+  #### `kustomize.toolkit.fluxcd.io/prune`
+  kustomize.toolkit.fluxcd.io/reconcile: disabled
+  **Note:** When the `kustomize.toolkit.fluxcd.io/reconcile` annotation is set to
+kustomize-controller/go.mod
+  github.com/fluxcd/pkg/ssa v0.83.0
+kustomize-controller/internal/controller/kustomization_controller.go
+  fmt.Sprintf("%s/reconcile", kustomizev1.GroupVersion.Group): kustomizev1.DisabledValue,
+  fmt.Sprintf("%s/ssa", kustomizev1.GroupVersion.Group): kustomizev1.IgnoreValue,
+  fmt.Sprintf("%s/ssa", kustomizev1.GroupVersion.Group): kustomizev1.IfNotPresentValue,
+  fmt.Sprintf("%s/force", kustomizev1.GroupVersion.Group): kustomizev1.EnabledValue,
+  fmt.Sprintf("%s/ssa", kustomizev1.GroupVersion.Group): kustomizev1.MergeValue,
+  if decryptor.IsEncryptedSecret(u) && !decryptor.IsDecryptionDisabled(u.GetAnnotations()) {
+  // entries are intentional opt-outs (kustomize.toolkit.fluxcd.io/prune:
+  fmt.Sprintf("%s/prune", kustomizev1.GroupVersion.Group): kustomizev1.DisabledValue,
+  fmt.Sprintf("%s/reconcile", kustomizev1.GroupVersion.Group): kustomizev1.DisabledValue,
+  fmt.Sprintf("%s/ssa", kustomizev1.GroupVersion.Group): kustomizev1.IgnoreValue,
+kustomize-controller/internal/decryptor/decryptor.go
+  // IsDecryptionDisabled checks if the given object has the decrypt: disabled annotation set
+  func IsDecryptionDisabled(annotations map[string]string) bool {
+  strings.EqualFold(annotations[fmt.Sprintf("%s/decrypt", kustomizev1.GroupVersion.Group)], kustomizev1.DisabledValue)
+  IsDecryptionDisabled(res.GetAnnotations()) {
