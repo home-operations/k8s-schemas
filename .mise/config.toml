@@ -18,7 +18,7 @@ kubectl = "1.37.2"
 lefthook = "2.2.2"
 "github:oxc-project/oxc" = { version = "0.79.0", version_prefix = "oxfmt_v", matching_regex = "^oxfmt-", rename_exe = "oxfmt" }
 sd = "1.1.0"
-"aqua:sholdee/crd-schema-publisher" = "2026.1104.230219"
+"aqua:sholdee/crd-schema-publisher" = "2026.1121.63640"
 uv = "0.13.9"
 vendir = "0.47.0"
 yq = "4.54.3"
