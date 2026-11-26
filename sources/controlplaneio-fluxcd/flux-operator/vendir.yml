@@ -10,7 +10,7 @@ directories:
       - path: .
         githubRelease:
           slug: controlplaneio-fluxcd/flux-operator
-          tag: v0.63.1
+          tag: v0.64.0
           assetNames:
             - install.yaml
           disableAutoChecksumValidation: true
